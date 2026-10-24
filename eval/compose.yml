@@ -1,0 +1,46 @@
+# The exam's stack. Owned by the eval, never by a builder.
+#
+# `api` is built from the pull request's `app/api` with the Dockerfile written here, so the exam
+# decides how the application is run (blueprint 12.4: `uvicorn app.main:app`) and the builder
+# decides what it contains. The builder's own dependency list is installed inside this container
+# and nowhere else: nothing the application needs ever enters the interpreter that grades it.
+#
+# Ports are published on the loopback only and deliberately avoid 5432 and 55432.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: eval
+      POSTGRES_PASSWORD: eval-only
+      POSTGRES_DB: equipment_eval
+    ports:
+      - "127.0.0.1:18432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eval -d equipment_eval"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  api:
+    build:
+      context: ../app/api
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        WORKDIR /srv/api
+        COPY requirements.txt ./
+        RUN pip install --no-cache-dir -r requirements.txt
+        COPY . .
+        CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://eval:eval-only@db:5432/equipment_eval
+    ports:
+      - "127.0.0.1:18000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      # The readiness probe blueprint DD-04 names for Compose: the user list as user 1.
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen(u.Request('http://127.0.0.1:8000/api/users', headers={'X-User-Id': '1'}), timeout=3)"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
