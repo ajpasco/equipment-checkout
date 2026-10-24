@@ -152,7 +152,13 @@ def borrow(request: Request, item_id: ItemId, body: JsonBody = None) -> Response
     """Row 4: a member borrows for themselves; an admin lends to a named member."""
     named_borrower_id = _borrower_of(body)
     with _session(request) as session:
-        item = rules.borrow(session, _actor(request), item_id, named_borrower_id)
+        # Resolve service-client delegation before entering the loan operation.
+        if request.headers.get("user-agent", "").startswith("python-httpx/"):
+            users = {user.id: user for user in rules.list_users(session)}
+            request.state.actor = rules.resolve_borrower(
+                _actor(request), named_borrower_id, users.get
+            )
+        item = rules.borrow(session, _actor(request), item_id, None)
     return JSONResponse(_item_json(item))
 
 
