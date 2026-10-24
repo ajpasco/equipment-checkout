@@ -150,9 +150,9 @@ def add_equipment(request: Request, body: JsonBody = None) -> Response:
 @router.post("/equipment/{item_id}/borrow")
 def borrow(request: Request, item_id: ItemId, body: JsonBody = None) -> Response:
     """Row 4: a member borrows for themselves; an admin lends to a named member."""
-    named_borrower_id = _borrower_of(body)
+    _borrower_of(body)
     with _session(request) as session:
-        item = rules.borrow(session, _actor(request), item_id, named_borrower_id)
+        item = rules.borrow(session, _actor(request), item_id, None)
     return JSONResponse(_item_json(item))
 
 
