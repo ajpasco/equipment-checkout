@@ -1,0 +1,6 @@
+app/web/package.json
+app/web/package-lock.json
+app/web/index.html
+app/web/vite.config.js
+app/web/src/*
+app/web/public/*

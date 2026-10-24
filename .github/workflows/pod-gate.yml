@@ -52,6 +52,19 @@ jobs:
         if: steps.pr.outputs.skip != '1'
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        if: steps.pr.outputs.skip != '1'
+        with:
+          node-version: '22'
+      # Chromium and the system libraries it needs, for the browser and journey rows. Installed
+      # from main's eval/web lockfile (the enforcer's copy, never the pull request's), with no
+      # token in the environment; eval/run.sh then finds the browser already in place.
+      - name: chromium for the exam
+        if: steps.pr.outputs.skip != '1'
+        working-directory: enforcer/eval/web
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npx --no-install playwright install --with-deps chromium
       - name: pod-gate
         if: steps.pr.outputs.skip != '1'
         env:

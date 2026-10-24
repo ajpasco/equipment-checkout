@@ -1,0 +1,10 @@
+{
+  "name": "equipment-checkout-browser-rows",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The B rows of the equipment-checkout exam: owned by the exam, read-only to every builder.",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "1.48.2"
+  }
+}

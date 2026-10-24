@@ -44,7 +44,7 @@ if [ $needs = 1 ]; then
   if [ "$state" = "success" ]; then
     lines+=("approval: pod/approval is success on $HEAD_SHA")
   else
-    lines+=("approval: waiting for the founder. This pull request changes a protected path and commit $HEAD_SHA carries no pod/approval status. The founder runs: pod-approve.sh $PR"); fail=1
+    lines+=("approval: waiting for the founder. This pull request changes a protected path and commit $HEAD_SHA carries no pod/approval status. The founder runs: pod approve $PR"); fail=1
   fi
 fi
 
