@@ -1,0 +1,59 @@
+name: pod-gate
+# Defined on main and run from main's copy, whatever the pull request carries. Two triggers:
+# the pull request itself, and a commit status named pod/approval landing on its head commit,
+# so the founder's click re-judges the pull request without anyone re-running anything.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+  status: {}
+permissions: {}
+jobs:
+  gate-runner:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: write
+      statuses: read
+    steps:
+      - name: find the pull request
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          CONTEXT: ${{ github.event.context }}
+          STATUS_SHA: ${{ github.event.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT" = "status" ]; then
+            if [ "$CONTEXT" != "pod/approval" ]; then echo "skip=1" >> "$GITHUB_OUTPUT"; exit 0; fi
+            n=$(gh api "repos/$GITHUB_REPOSITORY/commits/$STATUS_SHA/pulls" -q '.[0].number')
+            sha="$STATUS_SHA"
+          else
+            n="$PR_NUMBER"; sha="$PR_SHA"
+          fi
+          if [ -z "$n" ] || [ "$n" = "null" ]; then echo "skip=1" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "number=$n" >> "$GITHUB_OUTPUT"; echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.pr.outputs.skip != '1'
+        with:
+          ref: main
+          path: enforcer
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: steps.pr.outputs.skip != '1'
+        with:
+          ref: ${{ steps.pr.outputs.sha }}
+          path: subject
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        if: steps.pr.outputs.skip != '1'
+        with:
+          python-version: '3.12'
+      - name: pod-gate
+        if: steps.pr.outputs.skip != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash enforcer/.github/scripts/gate.sh "${{ steps.pr.outputs.number }}" "$GITHUB_WORKSPACE/enforcer" "$GITHUB_WORKSPACE/subject"
