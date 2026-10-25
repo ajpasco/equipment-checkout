@@ -1,0 +1,21 @@
+# The unit rows (mechanism U), graded since the in-process port.
+# Taken from docs/eval-plan.md section 3, never from the test files: the rows whose state cell
+# names unit.xml. One row id per line. eval/check_rows.py fails the exam unless eval/reports/unit.xml
+# holds a passing case for every id here: missing, failed, errored or skipped all fail, except a row
+# listed in eval/deferred.txt, which is reported and not failed. Lines starting with # are notes.
+T-001-N6
+T-003-P6
+T-003-N3
+T-004-P6
+T-004-N6
+T-005-N4
+T-006-P6
+T-006-N2
+T-007-N6
+T-008-N4
+T-009-P7
+T-009-N10
+T-010-P8
+T-010-N4
+T-011-P6
+T-011-N5

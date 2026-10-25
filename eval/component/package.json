@@ -1,0 +1,17 @@
+{
+  "name": "equipment-checkout-component-rows",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The C rows of the equipment-checkout exam: owned by the exam, read-only to every builder. Installed inside a container with install scripts off; one copy of React 18.3 lives here and vitest.config.js aliases the client's imports to it.",
+  "type": "module",
+  "devDependencies": {
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.8",
+    "jsdom": "25.0.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "vitest": "2.1.9"
+  }
+}
