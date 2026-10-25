@@ -1542,11 +1542,132 @@ removed when the API failure modal of a failed list fetch appears, what the page
 modal, and what it shows after Close other than that `list-indicator` is not shown again
 (REQ-013.24). No frozen test asserts any of them.
 
-## 13. Production concerns excluded
+## 13. Production-readiness review
 
-The scope is a bounded trial. The PRD supplies no availability, latency, scale, backup or
-retention figure, and none is invented here. Each of these stays out of scope and would need a
-scope amendment: real authentication and passwords (a non-goal), TLS, a production deployment
-target and its secret store, backups, monitoring and alerting, rate limiting, a database migration
-tool, cross-origin access, browsers other than Chromium in the test mechanisms, and security
-verification beyond the controls of section 5 (D-19).
+One line per concern of the production-readiness list that pod's practices file gives (its
+section A). This replaces the paragraph that stood here, "Production concerns excluded", which
+excluded the concerns together; each exclusion it made is kept below, on its own line, with who
+made it.
+
+**Who decides.** A decider is named as section 10 names them: the user's decision (D-nn), a PRD
+clause, a recorded default, or the drafter, settled at gate 6. A line marked **Default
+(proposed 2026-10-25)** was written down after the build began: it is pod's recommended default,
+or the closest thing to it the trial's scope allows. It is a default and not a decision until the
+founder accepts it or replaces it, in words. Where a default falls below pod's recommendation, the
+line says so and why.
+
+### 13.1 Security
+
+| Concern | In or out | The decision | Decided by |
+|---|---|---|---|
+| Where identity is established and where authorization is decided | In | Once, by `IdentityMiddleware`, outermost, before routing; `rules.resolve_actor` reads the role from the database on every request; routes read `request.state.actor` and never parse the header. `rules` alone decides who may do what (sections 2, 5.1). Real authentication and passwords stay out: they are a non-goal of the PRD | User, D-01 and `[Answer]`; recorded default for the header (10.3); PRD non-goal for authentication |
+| Validation of input | In | At the boundary, against the shapes of section 12.2, in the order of section 5.3; the rules layer decides on validated input only | User, D-03, D-06, D-13; drafter, DD-02 and DD-05, settled at gate 6 |
+| Secrets | In | The database credentials are the only secret. Read from the environment at start; never logged (5.4); a start-up error names the setting and never its value (section 6); `.env` is git-ignored and `.env.example` holds placeholders only. A production secret store is out, because no deployment is in scope; it comes back with a deployment target | Recorded default (sections 5.4, 6); the secret store excluded by the drafter, settled at gate 6 |
+| Dependencies | In, audit pending | Pinned to exact versions in committed lockfiles (`app/api/requirements.txt`, `app/web/package-lock.json`), inside the version lines of section 12.10; nothing a builder adds is installed into the environment that grades it. **Default (proposed 2026-10-25):** a new runtime dependency is named in the builder's handoff with its reason. **The exam does not audit dependencies yet**, which is below pod's recommendation: the audit finds known vulnerabilities in what is pinned today, and fixing them moves a line of section 12.10 (section 14.3) | Recorded default and DD-14 for the pins; the audit is the founder's decision (section 14.3) |
+| Transport | Out | No TLS anywhere: the application runs locally under Compose on `127.0.0.1`. It comes back with a deployment target, and then TLS is terminated by the proxy or the platform in front of the application, never by the application | Drafter, settled at gate 6 (the former section 13) |
+| Cross-origin access and security headers | In: closed | No CORS headers; the browser reaches the API only through the same origin (5.4, DD-04). **Default (proposed 2026-10-25):** nginx sets no security headers beyond its defaults, because the only deployment is local; headers come back with a deployment target, set by the proxy | User, D-01 (DD-04 follows from it); the headers line is a default |
+| Containers | In (story 3) | The API runs as a non-root user (10.3). **Default (proposed 2026-10-25):** every image starts from a base pinned to an exact tag inside the lines of section 12.10, `api` and `web` run as non-root users, no secret is baked into an image, and each `.dockerignore` excludes tests, local configuration (`.env`) and version control | Recorded default for the non-root API; the rest is a default |
+| What is never logged or stored | In | Section 5.4: never a user name, a request or response body, `DATABASE_URL` or a password in a log; no actor column anywhere; the browser stores nothing | User, D-09 and D-23 |
+| Security verification beyond the controls of section 5 | Out | No test shows that the application resists misuse | User, D-19 |
+| Rate limiting | Out | None. It comes back with a deployment reachable by more than the trial's users | Drafter, settled at gate 6 (the former section 13) |
+
+### 13.2 Reliability
+
+| Concern | In or out | The decision | Decided by |
+|---|---|---|---|
+| Start-up | In | Settings are read once, in the lifespan start-up and not at import; a bad setting stops the process with a message naming it; then the schema, then the seed, then serving (sections 6, 12.4) | Recorded default; section 12.4 pinned by the drafter, settled at gate 6 |
+| Shutdown | In | **Default (proposed 2026-10-25):** uvicorn's graceful shutdown on SIGTERM: it stops accepting, lets requests in flight finish, and the lifespan then disposes the database engine (as `app.main` already does). No test verifies it | Default |
+| Health | In, narrowly | No health route, because every request needs an identity (D-01). The Compose health check calls `GET /api/users` as user 1 (5.1, DD-04) | User, D-01; drafter, DD-04, settled at gate 6 |
+| Timeouts | Not decided | Two outbound calls exist: the API to PostgreSQL and the browser to the API. Neither has a timeout today (`db.make_engine` passes none; the client's `fetch` is never aborted). **Default (proposed 2026-10-25):** a connect timeout on the database connection and a time limit on each client request, a limit that ends as a failure (the API failure modal), as a request that never arrives already does (REQ-012). It is not built; it needs a story in `app/api/app/db.py` and `app/web/src/api.js` | Default; a story if the founder accepts it |
+| Shared objects | In | Section 8: one row lock per operation, decided on the locked row; the table check of section 7 as the last line of defence | User, D-13; drafter, DD-01, settled at gate 6 |
+| Retries and idempotency | In | Retry is a person repeating an action after a failure (REQ-012). A repeated Borrow, Return, Mark, Restore or Delete is refused on the state the first one left (409 or 404, section 8), so it is never doubled. **A repeated Add creates a second item**, which falls below pod's recommendation: if an Add reached the server and its answer was lost, Retry adds the item again. **Default (proposed 2026-10-25):** accepted for the trial, because duplicate names are allowed (D-10) and the person sees both rows and can delete one | User, D-10 and D-13 for the outcomes; the Add line is a default |
+| Schema evolution | Out | No migration tool; `CREATE TABLE IF NOT EXISTS` at start-up (section 7). It comes back with the first change to a table that holds data worth keeping | Drafter, settled at gate 6 (the former section 13) |
+| Backups and retention | Out | None for this trial. The PRD gives no backup or retention figure, and none is invented | Drafter, settled at gate 6 (the former section 13) |
+
+### 13.3 Observability
+
+| Concern | In or out | The decision | Decided by |
+|---|---|---|---|
+| Logs | In | One line per request on the logger `app.access` at INFO, in the exact format of section 5.4, carrying method, path, status and the acting user's id; the server's own access log is off. The line is plain text, not structured, which falls below pod's recommendation; the format is the user's (D-23) | User, D-23 |
+| Request identity | Out | No request id. **Default (proposed 2026-10-25):** excluded for the trial, which runs one API process writing one line per request, so a request's line is already its whole record. It comes back with a second process or a log store | Default |
+| Errors | In | One taxonomy, `rules.RuleError` and its kinds, raised by the rules layer and mapped to HTTP once, by `routes.answer_rule_error`, registered in `app.main` (section 12.5). An unexpected failure is not caught by the application: the framework answers 500 and uvicorn logs it once, with its stack. No bare `except` (enforced by the conventions step, section 14.1) | Recorded default for the mapping; the unexpected-failure line is a default (proposed 2026-10-25) |
+| Metrics and alerting | Out | None. It comes back with a deployment target and a platform that can collect them | Drafter, settled at gate 6 (the former section 13) |
+
+### 13.4 Delivery and data
+
+| Concern | In or out | The decision | Decided by |
+|---|---|---|---|
+| Reproducible build | In | Lockfiles committed; the exam builds the client with `npm ci` inside a pinned image and installs its own tools by hash or from its own lockfiles; base images by tag (section 12.10). One command, `sh eval/run.sh`, grades the same way locally and in the gate | Recorded default; DD-14 |
+| Configuration | In | Through the environment; every setting in section 6 with its default and whether it is required; `.env.example` committed with placeholders | Recorded default |
+| Running locally | In (story 3) | One command: `docker compose` over story 3's compose file, with `.env` copied from `.env.example` | Recorded default (sections 1, 6) |
+| Seed data | In | Idempotent: `INSERT ... ON CONFLICT (id) DO NOTHING`; any number of runs leaves the three users (section 7) | User, D-13 |
+| Invariants | In | In the store where it can hold them (primary keys, the foreign key, the check constraints of section 7); in the rules layer where it cannot (an admin is never a borrower, REQ-005) | Recorded default; drafter for the REQ-005 placement, settled at gate 6 |
+| Time and identifiers | In | Identifiers are generated by the store (`GENERATED ALWAYS AS IDENTITY`), except the three seeded users' fixed ids (DD-03). The application stores no time | Recorded default; drafter, DD-03, settled at gate 6 |
+| Browsers other than Chromium in the test mechanisms | Out | The rows run in Chromium only | Drafter, settled at gate 6 (the former section 13) |
+
+## 14. Conventions
+
+How the application is built, beyond what it does. **Every builder is bound to this section**:
+pod's builder preamble tells each one to follow it, to follow the existing code where it is
+silent, and to introduce no convention of its own; a convention a builder believes wrong is named
+in its handoff note, never departed from silently. `pod review` hands this section, as it stands
+on main, to the fresh reader with each diff, and the reader names every departure.
+
+Proposed 2026-10-25. Every line is a **default** until the founder accepts it or replaces it in
+words. Where a convention is checked by a tool, the tool is in the exam's conventions step and
+the exam fails when it fails; where no tool can check it, the fresh reader does.
+
+### 14.1 The conventions step
+
+`eval/conventions.sh`, called first by `eval/run.sh`. It is not a row: no id, no trace, no
+requirement. It runs the tools below from `eval/`, at pinned versions, against `app/`. An empty
+`app/` has nothing to check and passes. Each tool is passed its configuration explicitly, so
+nothing under `app/` is read as configuration: not a `ruff.toml`, a `.bandit`, an
+`eslint.config.js`, a `.gitleaks.toml` or `.gitleaksignore`, nor a `.gitignore` or `.ignore` that
+would hide a file. A failure is read in the gate's eval log, under `[conventions]`, and is the
+builder's to fix inside its scope. A line that turns a check off (`# noqa`, `# nosec`,
+`eslint-disable`, `gitleaks:allow`) is a departure: the builder names each one in its handoff with
+its reason, and the fresh reader reports every one it finds.
+
+| Check | Tool, pinned | Configuration | Runs over | The rule |
+|---|---|---|---|---|
+| Secret scan | gitleaks 8.30.1, image `zricethezav/gitleaks:v8.30.1` pinned by digest, in its own container | `eval/conventions/gitleaks.toml` | every file under `app/` | No secret, credential or token in the tree; gitleaks' default rules |
+| Python lint | ruff 0.15.9, `ruff check` | `eval/conventions/ruff.toml` | every `.py` under `app/` | ruff's default rules (pyflakes, and the pycodestyle errors E4, E7 and E9, which include no bare `except`) |
+| Python security lint | bandit 1.8.3 | `eval/conventions/bandit.ini` | every `.py` under `app/` | Every bandit test, at every severity |
+| JavaScript lint | ESLint 9.39.5 with `@eslint/js` 9.39.5, `eslint-plugin-react` 7.37.5, `eslint-plugin-react-hooks` 5.2.0, `globals` 17.13.0 | `eval/conventions/eslint.config.js` | every `.js` and `.jsx` under `app/` | The recommended rules of all three, for React 18.3 and the automatic JSX runtime; `react/prop-types` off (the client is JavaScript with no prop-types package); `no-console` on; no warning allowed |
+
+The Python tools are installed from `eval/conventions/requirements.txt`, by hash, into a virtual
+environment of their own outside the tree; the JavaScript tools from `eval/conventions`' own
+lockfile with install scripts off. Nothing a builder writes is installed or run by the step.
+
+### 14.2 The conventions no tool checks
+
+| Practice | The rule | Checked by |
+|---|---|---|
+| Layering | The layers and the one-way imports of section 2. The rules layer decides and performs no I/O beyond the database session it is handed; routes map outcomes to HTTP and decide nothing; the client calls the API only through `src/api.js` | The fresh reader |
+| Errors | One taxonomy, `rules.RuleError`, raised by the rules layer and mapped to HTTP in one place (13.3). No swallowed exception and no error turned into a default value without a decision that says so. No bare `except` (ruff, 14.1) | The fresh reader; ruff for bare `except` |
+| Logging | One logger, `app.access`, in the format of section 5.4; nothing from the never-logged list of 5.4; no `print` in the API; no console output in the client (ESLint `no-console`, 14.1) | The fresh reader; ESLint for the client |
+| Configuration | `app.config.load_settings`, once, at start-up; nothing else reads the environment. The client reads only `VITE_API_BASE_URL` | The fresh reader |
+| Dependencies | The lockfile is the truth; a dependency is added only for a need the story states, pinned inside its line of section 12.10, and named in the handoff with its reason | The fresh reader; the exam installs nothing a builder adds into the environment that grades it |
+| Types | Python is type-annotated as the existing code is; the client is JavaScript (section 12.10). No type checker is in the step yet (14.3) | The fresh reader |
+| Formatting | As the existing code is formatted: Python in the style of `ruff format` at its defaults, which four of the six API modules already meet; JavaScript with single quotes in code, double quotes in JSX attributes, semicolons, and lines of at most 100 characters, the style of `prettier` with `singleQuote` and a 100-character line, which six of the client's eight files already meet. No formatter is in the step yet (14.3) | The fresh reader |
+| The builder's own tests | Allowed only where the story's scope file allows them; run by the builder, never by the exam; they judge nothing and are never a reason a row may be skipped | The scope check of the gate; the fresh reader |
+| Naming and structure | Files, modules and functions named in the PRD's words for what they are, not for how they work; one concept per module | The fresh reader |
+| Comments | Say why, never what; no commented-out code; no `TODO` in a story that is done | The fresh reader |
+| Commits | One story per branch; messages say what changed and why, in plain English | The fresh reader |
+| The client | No secret and no configuration in the bundle beyond `VITE_API_BASE_URL`; every control labelled for a screen reader (section 12.8, verified by the rows of REQ-014); no console output in the production build (ESLint, 14.1) | The rows; ESLint; the fresh reader |
+
+### 14.3 Not in the step yet, and why
+
+A tool joins the step only once it runs clean on the trunk's `app/` as it stands. Measured on
+2026-10-25 against main with stories 1 and 2 merged:
+
+| Tool | Result on the trunk | What would let it join |
+|---|---|---|
+| `ruff format --check` (0.15.9) | `app/api/app/db.py` and `app/api/app/main.py` would be reformatted | A formatting-only story over those two files, or the founder leaves it out |
+| `mypy --ignore-missing-imports` (1.20.0) | 5 errors in `app/api/app/rules.py`, lines 246 to 250 (`"object" has no attribute "id"`, and `name`, `status`, `borrower_id`, `borrower_name`) | A typing story over `rules.py`, which no story's scope holds today, or the founder leaves it out |
+| `pip-audit` (2.9.0) on `app/api/requirements.txt` | 7 known vulnerabilities in starlette 0.46.2 (PYSEC-2026-161, -248, -249, -1941, -1942, -2280, -2281), fixed from 0.47.2 upward. starlette is pinned as FastAPI 0.115.14's dependency, and section 12.10 fixes FastAPI at the 0.115 line | An amendment of 12.10 to a FastAPI line that allows a fixed starlette, and a story that moves `app/api/requirements.txt` |
+| `prettier --check` (3.9.9) over `index.html`, `vite.config.js` and `src/` | Default settings: 7 of the 8 files would change. With single quotes and 100 characters a line, the closest to the existing code: 2 (`app/web/src/names.js`, one 104-character line; `app/web/src/styles.css`, the font stack) | A formatting-only story over those files, or the founder leaves it out |
+| `tsc --noEmit --checkJs` (5.9.3, with `@types/react` 18.3) | 10 errors in `app/web/src`: 8 calls of a component without its `tone` property, which its parameters make required to the checker; one `import.meta.env`, which the checker does not know without Vite's types; one `inert` attribute, which React 18's types lack | A typing decision for a JavaScript client: JSDoc types in a story, or the founder leaves it out |
+| `npm audit` (on `app/web/package-lock.json`) | The runtime dependencies (React) have none. The build tools have 2 (esbuild through Vite 5.4), fixed only outside the Vite 5.4 line | Runtime dependencies only (`--omit=dev`) could join now; the founder decides, because an audit's verdict changes as advisories are published, so a clean trunk can turn red with no change to the code |
+| `hadolint` | No Dockerfile exists yet (story 3) | Measured once story 3 has merged |
