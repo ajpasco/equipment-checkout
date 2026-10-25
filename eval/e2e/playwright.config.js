@@ -11,8 +11,8 @@
  * rewriting of a request's identity or body by `page.route`; one worker; JUnit to
  * `e2e/reports/journey.xml`; trace and one screenshot per step.
  *
- * There is deliberately no `webServer`. eval/run.sh starts the Compose stack
- * before these rows run, and the production rows stop and start it themselves. A
+ * There is deliberately no `webServer`. eval/run.sh starts the application's
+ * own Compose stack, app/compose.yml, before these rows run, and the production rows stop and start it themselves. A
  * `webServer` here would start a second one, or fight the ones they start.
  */
 

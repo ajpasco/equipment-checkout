@@ -1,10 +1,11 @@
-# The exam's whole stack, for the browser (B) and journey (J) rows. Owned by the exam, never by a
-# builder.
+# The exam's own stack, which serves the production build of app/web to the browser (B) rows. Owned
+# by the exam, never by a builder. The journey (J) rows run against the application's own stack,
+# app/compose.yml, instead; this one is the B rows' server only, and its api and db are there
+# because nginx's /api needs somewhere to send to (the B rows answer every /api call themselves).
 #
 # Started by eval/run.sh as
 #   docker compose -p <run> -f eval/stack/compose.yml --env-file eval/e2e/eval.env up -d --build --wait
-# and stopped and started again by the production rows (eval/e2e/support/stack.js) with the same
-# file, project and env file.
+# and taken down before the application's own stack starts on the same port.
 #
 # Three services, in the shape the blueprint gives the real stack (TECH-SPEC section 6 and 9.1):
 #   db   PostgreSQL 16, its data on a named volume, so a `down` without -v keeps what was committed
