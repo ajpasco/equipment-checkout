@@ -1,0 +1,23 @@
+{
+  "name": "equipment-checkout-web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The web client of Shared Equipment Checkout.",
+  "type": "module",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "~18.3.1",
+    "react-dom": "~18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "~5.4.11"
+  }
+}
