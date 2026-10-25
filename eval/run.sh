@@ -3,7 +3,9 @@
 # `eval/` beside the pull request's `app/`. Exit 0 means every step ran and every expected row
 # passed.
 #
-# Three groups of rows, in this order, each run whatever happened to the one before:
+# First the conventions step (eval/conventions.sh), which is not a row: pinned linters and a secret
+# scan over app/, failing the exam when one of them fails. Then three groups of rows, in this
+# order, each run whatever happened to the one before:
 #   API rows (mechanism I)      eval/api, against app/api in its own container (eval/compose.yml)
 #   browser rows (mechanism B)  eval/web, against the production build of app/web served by the
 #                               exam's stack (eval/stack/compose.yml), every /api call faked
@@ -50,6 +52,12 @@ docker compose version >/dev/null 2>&1 || { echo "the exam needs Docker with Com
 
 rm -rf "$REPORTS"
 mkdir -p "$REPORTS"
+
+# ---------------------------------------------------------------- the conventions step
+# Not a row: pinned formatters, linters and scanners over app/ (eval/conventions.sh). It runs first
+# and, like every step, does not stop the ones after it.
+echo "[exam] conventions: the pinned tools over app/"
+sh "$ROOT/eval/conventions.sh" || fail "conventions: a pinned tool reported problems in app/ (see [conventions] above)"
 
 # ---------------------------------------------------------------- the API rows
 echo "[exam] API rows: starting the application from this tree's app/api"

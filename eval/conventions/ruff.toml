@@ -1,0 +1,15 @@
+# ruff's configuration for the conventions step (eval/conventions.sh). Read-only to every builder.
+#
+# Passed with --config, so ruff reads this file and no configuration a builder puts under app/
+# (a ruff.toml, a .ruff.toml, a [tool.ruff] table in pyproject.toml).
+#
+# Lint only, with ruff's default rule set (E4, E7, E9, F): it ran clean on the trunk's app/ when it
+# joined the step. `ruff format --check` is not in the step yet, because two files on the trunk would
+# be reformatted (docs/TECH-SPEC.md, section 14).
+
+target-version = "py312"
+
+# ruff skips files named in .gitignore and .ignore files by default, and a builder could put one
+# under app/. Every Python file under app/ is checked; ruff's own default exclusions (installed
+# packages, virtual environments, build output) still apply.
+respect-gitignore = false

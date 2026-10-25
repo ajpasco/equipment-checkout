@@ -1,0 +1,13 @@
+{
+  "name": "equipment-checkout-conventions",
+  "private": true,
+  "type": "module",
+  "description": "The conventions step's JavaScript tools, pinned. Read-only to every builder.",
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "eslint": "9.39.5",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "globals": "17.13.0"
+  }
+}

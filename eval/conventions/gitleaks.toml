@@ -1,0 +1,19 @@
+# gitleaks' configuration for the conventions step (eval/conventions.sh). Read-only to every builder.
+#
+# gitleaks' own default rules, unchanged. The file exists so that the step can name it with
+# --config: without it, gitleaks would read a .gitleaks.toml placed in the folder it scans, and
+# a builder's allowlist there would switch the scan off.
+
+[extend]
+useDefault = true
+
+# What a builder's machine may hold that the gate's copy never does: installed packages, virtual
+# environments and a local production build. None of it is the builder's code, and in the gate
+# these folders do not exist.
+[allowlist]
+description = "not the builder's code"
+paths = [
+  '''(^|/)node_modules/''',
+  '''(^|/)\.?venv/''',
+  '''(^|/)app/web/dist/''',
+]
