@@ -52,6 +52,8 @@ fi
 #    with no token in its environment, so it cannot write a check run for itself.
 WORK=$(mktemp -d)
 cp -R "$ENFORCER/eval" "$WORK/eval"
+# The eval plan, from main, which eval/check_plan.py checks the exam's row lists against.
+mkdir -p "$WORK/docs"; cp "$ENFORCER/docs/eval-plan.md" "$WORK/docs/eval-plan.md"
 for f in package.json package-lock.json; do [ -f "$ENFORCER/$f" ] && cp "$ENFORCER/$f" "$WORK/"; done
 if [ -d "$SUBJECT/app" ]; then cp -R "$SUBJECT/app" "$WORK/app"; else mkdir -p "$WORK/app"; fi
 if (cd "$WORK" && env -u GH_TOKEN -u GITHUB_TOKEN sh eval/run.sh) > "$WORK/eval.log" 2>&1; then

@@ -1,0 +1,5 @@
+# Rows the founder has deferred: `<row id> <defect id>`, one per line; the defect record is
+# docs/defects/<defect id>.md. eval/check_rows.py reports a deferred row that does not pass and does
+# not fail the exam for it; eval/check_plan.py still counts it as a row with a test. A line is added
+# only on the founder's decision in words, recorded in the defect's decision field, and removed
+# when the row passes again. Lines starting with # are notes.

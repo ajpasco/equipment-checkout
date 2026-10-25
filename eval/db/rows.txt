@@ -1,0 +1,6 @@
+# The database row (mechanism D), graded since the in-process port.
+# Taken from docs/eval-plan.md section 3, never from the test files: the rows whose state cell
+# names db.xml. One row id per line. eval/check_rows.py fails the exam unless eval/reports/db.xml
+# holds a passing case for every id here: missing, failed, errored or skipped all fail, except a row
+# listed in eval/deferred.txt, which is reported and not failed. Lines starting with # are notes.
+T-008-N7
