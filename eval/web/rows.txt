@@ -1,0 +1,25 @@
+# The browser rows (mechanism B), graded from story 2.
+# One row id per line. eval/check_rows.py fails the exam unless eval/reports/browser.xml holds a passing case
+# for every id here: missing, failed, errored or skipped all fail. Lines starting with # are notes.
+T-009-N14
+T-009-N15
+T-013-N10
+T-013-N12
+T-013-P6
+T-014-P5
+T-014-P6
+T-014-P8
+T-014-P12
+T-015-N1
+T-015-P1
+T-015-P3
+T-015-P4
+T-015-P8
+T-015-P9
+T-015-P10
+T-015-P11
+T-015-P12
+T-015-P13
+T-015-P14
+T-015-P15
+T-017-P2
