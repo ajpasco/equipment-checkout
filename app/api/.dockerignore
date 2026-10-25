@@ -1,0 +1,18 @@
+# Only what the image needs, requirements.txt and app/, reaches the build: no tests, no local
+# configuration, no version control, nothing built on the developer's machine.
+.git
+.gitignore
+.env
+.env.*
+tests
+**/tests
+**/test_*.py
+**/__pycache__
+**/*.pyc
+.venv
+venv
+.pytest_cache
+.ruff_cache
+.mypy_cache
+Dockerfile
+.dockerignore
