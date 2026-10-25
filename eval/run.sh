@@ -9,15 +9,18 @@
 #   API rows (mechanism I)      eval/api, against app/api in its own container (eval/compose.yml)
 #   browser rows (mechanism B)  eval/web, against the production build of app/web served by the
 #                               exam's stack (eval/stack/compose.yml), every /api call faked
-#   journey rows (mechanism J)  eval/e2e, against that same stack with the real API and database;
-#                               the production rows among them stop and start it
+#   journey rows (mechanism J)  eval/e2e, against the application's own stack, app/compose.yml,
+#                               with the real API and database; the production rows among them stop
+#                               and start it. Before it starts, eval/check_compose.py refuses a
+#                               compose file that asks for more of this machine than the stack needs
 # Then the row check (eval/check_rows.py) reads each report and fails unless every id listed in
 # eval/api/rows.txt, eval/web/rows.txt and eval/e2e/rows.txt has a passing case. A runner's own
 # exit code is not trusted to say that: a skipped case does not fail pytest, and Playwright
 # reports the production rows as skipped when a journey row fails.
 #
-# Nothing the builder wrote runs on this machine. The application and the web client are built
-# and run inside containers. The rows run here, with tools installed only from the exam's own
+# Nothing the builder wrote runs on this machine outside a container. The application and the web
+# client are built and run inside containers, and the builder's compose file may give them nothing
+# of this machine's but published ports (eval/check_compose.py). The rows run here, with tools installed only from the exam's own
 # pinned lists: the Python tools from eval/api/requirements-eval.txt by hash into a fresh virtual
 # environment, and Playwright from eval/web's and eval/e2e's own lockfiles.
 set -u
@@ -27,15 +30,20 @@ RUN="equipment-eval-$$"
 API_PROJECT="$RUN-api"
 STACK_PROJECT="$RUN-stack"
 STACK_FILE="$ROOT/eval/stack/compose.yml"
+APP_PROJECT="$RUN-app"
+APP_FILE="$ROOT/app/compose.yml"
 ENV_FILE="$ROOT/eval/e2e/eval.env"
 WEB_PORT=$(sed -n 's/^WEB_PORT=//p' "$ENV_FILE")
 REPORTS="$ROOT/eval/reports"
 
 api() { docker compose -p "$API_PROJECT" -f "$ROOT/eval/compose.yml" "$@"; }
 stack() { docker compose -p "$STACK_PROJECT" -f "$STACK_FILE" --env-file "$ENV_FILE" "$@"; }
+app_stack() { docker compose -p "$APP_PROJECT" -f "$APP_FILE" --env-file "$ENV_FILE" "$@"; }
+app_allowed=0
 cleanup() {
   api down -v --remove-orphans >/dev/null 2>&1 || true
   stack down -v --remove-orphans >/dev/null 2>&1 || true
+  [ "$app_allowed" = 1 ] && { app_stack down -v --remove-orphans >/dev/null 2>&1 || true; }
 }
 trap cleanup EXIT
 trap 'exit 130' INT TERM
@@ -82,48 +90,71 @@ else
 fi
 api down -v --remove-orphans >/dev/null 2>&1 || true
 
-# ------------------------------------------------- the web stack, then the B and J rows
-stack_up=0
+# ------------------------------------------------- Playwright, for the B and J rows
+# Installed once, the first time a group of rows has something to run against.
+tools=untried
+playwright_tools() {
+  if [ "$tools" = untried ]; then
+    echo "[exam] Playwright and Chromium, from the exam's own lockfiles"
+    if npm ci --prefix "$ROOT/eval/web" --ignore-scripts --no-audit --no-fund --loglevel=error \
+      && npm ci --prefix "$ROOT/eval/e2e" --ignore-scripts --no-audit --no-fund --loglevel=error \
+      && "$ROOT/eval/web/node_modules/.bin/playwright" install chromium; then
+      tools=ok
+    else
+      tools=failed
+      fail "browser and journey rows: Playwright could not be installed"
+    fi
+  fi
+  [ "$tools" = ok ]
+}
+
+# ------------------------------------------------- the B rows, on the exam's own stack
 if [ ! -f "$ROOT/app/web/package.json" ]; then
-  echo "[exam] browser and journey rows: there is no web client in this tree (app/web/package.json is absent)," \
-    "so neither can run and every one of their rows fails by absence" >&2
-  fail "web stack: app/web/package.json is absent"
+  echo "[exam] browser rows: there is no web client in this tree (app/web/package.json is absent)," \
+    "so every browser row fails by absence" >&2
+  fail "browser rows: app/web/package.json is absent"
 else
-  echo "[exam] web stack: building app/web for production inside a container and starting the stack"
+  echo "[exam] browser rows: building app/web for production inside a container and starting the exam's stack"
   if stack up -d --build --wait --wait-timeout 300; then
-    stack_up=1
+    if playwright_tools; then
+      echo "[exam] browser rows: running"
+      BROWSER_BASE_URL="http://127.0.0.1:$WEB_PORT" \
+        "$ROOT/eval/web/node_modules/.bin/playwright" test --config "$ROOT/eval/web/playwright.config.js" \
+        || fail "browser rows: Playwright reported failures"
+    fi
   else
-    echo "[exam] web stack: the stack did not start; its log:" >&2
+    echo "[exam] browser rows: the exam's stack did not start; its log:" >&2
     stack logs --no-color --tail 60 >&2 || true
-    fail "web stack: eval/stack/compose.yml did not start with this tree's app/"
+    fail "browser rows: eval/stack/compose.yml did not start with this tree's app/"
   fi
-fi
-
-tools_ok=0
-if [ "$stack_up" = 1 ]; then
-  echo "[exam] Playwright and Chromium, from the exam's own lockfiles"
-  if npm ci --prefix "$ROOT/eval/web" --ignore-scripts --no-audit --no-fund --loglevel=error \
-    && npm ci --prefix "$ROOT/eval/e2e" --ignore-scripts --no-audit --no-fund --loglevel=error \
-    && "$ROOT/eval/web/node_modules/.bin/playwright" install chromium; then
-    tools_ok=1
-  else
-    fail "browser and journey rows: Playwright could not be installed"
-  fi
-fi
-
-if [ "$tools_ok" = 1 ]; then
-  echo "[exam] browser rows: running"
-  BROWSER_BASE_URL="http://127.0.0.1:$WEB_PORT" \
-    "$ROOT/eval/web/node_modules/.bin/playwright" test --config "$ROOT/eval/web/playwright.config.js" \
-    || fail "browser rows: Playwright reported failures"
-
-  echo "[exam] journey rows: running"
-  E2E_BASE_URL="http://localhost:$WEB_PORT" \
-  EVAL_STACK_FILE="$STACK_FILE" EVAL_STACK_PROJECT="$STACK_PROJECT" \
-    "$ROOT/eval/e2e/node_modules/.bin/playwright" test --config "$ROOT/eval/e2e/playwright.config.js" \
-    || fail "journey rows: Playwright reported failures"
 fi
 stack down -v --remove-orphans >/dev/null 2>&1 || true
+
+# ------------------------------------------------- the J rows, on the application's own stack
+if [ ! -f "$APP_FILE" ]; then
+  echo "[exam] journey rows: there is no stack in this tree (app/compose.yml is absent)," \
+    "so every journey row fails by absence" >&2
+  fail "journey rows: app/compose.yml is absent"
+elif ! "$PY" -I eval/check_compose.py app/compose.yml "$APP_PROJECT" "$ENV_FILE" app; then
+  fail "journey rows: app/compose.yml asks for something the exam does not start (see [compose] above)"
+else
+  app_allowed=1
+  echo "[exam] journey rows: starting app/compose.yml with eval/e2e/eval.env"
+  if app_stack up -d --build --wait --wait-timeout 300; then
+    if playwright_tools; then
+      echo "[exam] journey rows: running"
+      E2E_BASE_URL="http://localhost:$WEB_PORT" \
+      EVAL_STACK_FILE="$APP_FILE" EVAL_STACK_PROJECT="$APP_PROJECT" \
+        "$ROOT/eval/e2e/node_modules/.bin/playwright" test --config "$ROOT/eval/e2e/playwright.config.js" \
+        || fail "journey rows: Playwright reported failures"
+    fi
+  else
+    echo "[exam] journey rows: app/compose.yml did not start; its log:" >&2
+    app_stack logs --no-color --tail 60 >&2 || true
+    fail "journey rows: app/compose.yml did not start with eval/e2e/eval.env"
+  fi
+  app_stack down -v --remove-orphans >/dev/null 2>&1 || true
+fi
 
 # ------------------------------------------------------------------ the row check
 echo "[exam] the row check: every expected row id needs a passing case in its report"

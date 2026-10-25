@@ -1,0 +1,7 @@
+app/compose.yml
+app/.env.example
+app/api/Dockerfile
+app/api/.dockerignore
+app/web/Dockerfile
+app/web/nginx.conf
+app/web/.dockerignore
