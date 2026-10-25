@@ -1,0 +1,329 @@
+/* The look of the mockup (D-17), value for value. Where the PRD differs from the mockup the PRD's
+   reading is built: the inline validation message sits inside the Add panel, below the field
+   (REQ-009.8), and the mockup's banner and success notes are not built (D-19, D-14). */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 15px/1.4 -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui,
+    sans-serif;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* The state demos' panel. Not a card: it has its own 12px radius (REQ-015.14). */
+.demo {
+  margin: 14px 0;
+  font-size: 12px;
+  color: #6e6e73;
+  background: #fff;
+  border-radius: 12px;
+  padding: 6px 12px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.demo .label {
+  margin-left: 6px;
+}
+
+/* The top bar: sticky, white at 75%, blurring what is behind it by 20px (REQ-015.4, .9). */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+}
+
+header .wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+h2 {
+  font-size: 12px;
+  margin: 20px 0 6px 6px;
+  color: #6e6e73;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6e6e73;
+}
+
+select,
+input {
+  font: inherit;
+  padding: 6px 10px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  background: #fff;
+  color: #1d1d1f;
+  outline: none;
+}
+
+select:focus,
+input:focus {
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.25);
+}
+
+/* The role badge: a pill. */
+.role {
+  font-size: 11px;
+  background: #e8e8ed;
+  color: #6e6e73;
+  padding: 2px 10px;
+  border-radius: 99px;
+}
+
+/* A card: the rows, the Add panel, the list indicator and the empty text (REQ-015.10). */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0 12px 0 16px;
+  margin: 6px 0;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Every row is 48px high whatever it holds (REQ-015.1, .2). */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  overflow: hidden;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.act {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  height: 32px;
+  flex: none;
+}
+
+.name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The status badge: a pill (REQ-015.7). */
+.tag {
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 1px 10px;
+  border-radius: 99px;
+  flex: none;
+}
+
+.tag.available {
+  background: #e3f8e8;
+  color: #1a7f37;
+}
+
+.tag.loan {
+  background: #e1efff;
+  color: #0058b0;
+}
+
+.tag.out {
+  background: #ececf0;
+  color: #6e6e73;
+}
+
+/* An icon button: round, as wide as it is tall (REQ-015.8). */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  background: #e8e8ed;
+  color: #1d1d1f;
+  cursor: pointer;
+  font: inherit;
+}
+
+button:hover {
+  background: #dcdce1;
+}
+
+button.primary {
+  background: #0071e3;
+  color: #fff;
+}
+
+button.primary:hover {
+  background: #0062c4;
+}
+
+button.danger {
+  color: #d70015;
+}
+
+svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.muted {
+  color: #6e6e73;
+  text-align: center;
+  padding: 22px 16px;
+}
+
+.spin {
+  display: inline-block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #d2d2d7;
+  border-top-color: #0071e3;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 7px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The Add panel: the field and its icon on one line, the inline message below them. */
+.add {
+  padding: 10px 12px;
+}
+
+.add .line {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.add input {
+  flex: 1;
+  min-width: 0;
+}
+
+.add .note {
+  font-size: 13px;
+  margin: 8px 6px 0;
+  color: #d70015;
+}
+
+/* The modals: one at a time, over a dimmed and blurred page. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.modal {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  width: 300px;
+  padding: 22px 20px 16px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.modal h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.modal p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: #6e6e73;
+}
+
+.modal .buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.modal button {
+  width: 40px;
+  height: 40px;
+}
+
+.modal .members {
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+/* A member button: the member's name beside its icon, 10px corners (REQ-014.8, REQ-015.13). */
+.modal .members button {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 0 12px;
+  font-size: 14px;
+}
