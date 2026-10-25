@@ -1,0 +1,14 @@
+# Only the client's sources and lockfile reach the build: no installed packages or local build
+# (they are made inside the image), no tests, no local configuration, no version control.
+.git
+.gitignore
+.env
+.env.*
+node_modules
+dist
+tests
+**/*.test.js
+**/*.test.jsx
+coverage
+Dockerfile
+.dockerignore

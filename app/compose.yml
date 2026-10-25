@@ -1,0 +1,64 @@
+# The Shared Equipment Checkout stack (blueprint sections 1, 6 and 7): three services.
+#
+#   db   PostgreSQL 16, its data directory on the named volume `pgdata`, so `docker compose down`
+#        keeps every committed change and `down -v` is a first start. Not published.
+#   api  the FastAPI application, `uvicorn app.main:app` on port 8000 inside the Compose network.
+#        Not published: the browser reaches it only through `web`, on the same origin.
+#   web  nginx serving the production build of the client and passing /api to `api`. The only
+#        published port, WEB_PORT, on the loopback.
+#
+# Every value comes from the env file Compose is given, by interpolation: `app/.env`, copied from
+# `.env.example`, on a developer's machine; `eval/e2e/eval.env`, passed with `--env-file`, in the
+# exam. A missing required setting stops Compose before anything starts.
+services:
+  db:
+    image: postgres:16.13
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in the env file}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in the env file}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in the env file}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build:
+      context: ./api
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in the env file}
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      # No health route exists, because every request needs an identity (blueprint 5.1, DD-04):
+      # the probe reads the user list as user 1.
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen(u.Request('http://127.0.0.1:8000/api/users', headers={'X-User-Id': '1'}), timeout=3)"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  web:
+    build:
+      context: ./web
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  pgdata:
