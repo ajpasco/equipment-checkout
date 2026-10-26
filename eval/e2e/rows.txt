@@ -1,33 +1,56 @@
 # The journey and production rows (mechanism J), graded from story 2.
 # One row id per line. eval/check_rows.py fails the exam unless eval/reports/journey.xml holds a passing case
 # for every id here: missing, failed, errored or skipped all fail. Lines starting with # are notes.
+# The ids below are read from docs/eval-plan.md section 3, never from the test files; the journey
+# pair rule of eval/check_plan.py (eval plan 1.6) reads this list.
 T-001-N8
 T-001-P5
+T-002-N4
+T-002-P3
 T-003-N5
 T-003-P5
+T-004-N10
 T-004-N9
 T-004-P7
 T-005-N5
 T-005-N7
+T-005-P2
+T-006-N8
 T-006-P7
+T-006-P8
+T-007-N10
 T-007-P4
 T-008-N11
 T-008-N12
+T-008-P3
+T-009-N16
+T-009-N17
+T-009-N18
 T-009-P5
+T-010-N10
 T-010-P7
+T-011-N10
 T-011-N9
 T-011-P7
 T-012-N10
+T-012-N11
+T-012-N12
+T-012-N13
+T-012-P10
 T-012-P5
 T-012-P7
+T-013-N16
 T-013-N5
 T-013-P14
 T-013-P17
 T-013-P19
 T-013-P22
 T-013-P24
+T-014-N2
+T-014-P13
 T-016-N3
 T-016-P3
 T-016-P4
 T-017-N3
 T-017-N4
+T-017-P3

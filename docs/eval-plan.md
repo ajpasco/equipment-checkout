@@ -1,6 +1,6 @@
 # Eval plan and stories: Shared Equipment Checkout (Trial)
 
-Status: revision 4 by the preparation drafter, for the orchestrator's check against `docs/orchestrator/rubrics/eval-plan.md`, including its sections "What a test may assert" and "Rows verified by a person". Nothing here has been run, and no implementation exists.
+Status: revision 5 adds a journey pair for every behavioural requirement (1.6, 4.6), after the build. Revision 4 by the preparation drafter, for the orchestrator's check against `docs/orchestrator/rubrics/eval-plan.md`, including its sections "What a test may assert" and "Rows verified by a person". Nothing here has been run, and no implementation exists.
 
 Inputs, and only these: `prep/PRD.md` (amended 2026-10-20 for the third round: REQ-001 to REQ-017, 182 labelled criteria, each stated as a business outcome and none naming a status code; no question open), `prep/TECH-SPEC.md` (the blueprint: the 182-row verification register in its section 4, the concurrency table in its section 8, the four-story split in its section 9, GAP-1 and OP-3 in its section 11, the pinned interface contract in its section 12), `prep/inputs/decisions-20261020.md` (D-01 to D-27) and the rubric. This plan creates, changes and renumbers no requirement ID.
 
@@ -28,14 +28,14 @@ What revision 4 changes, in one paragraph: the nine criteria the third round add
 
 - Each Given / When / Then is one sentence in plain English. It ends with the labelled criteria it checks in square brackets, for example `[REQ-004.1]`. Section 5 is derived from those brackets. A test whose brackets are empty checks no labelled criterion; its sentence says what it checks instead and why it exists.
 - **The assertion rule.** A Then asserts what a business requirement claims: what a person sees or is shown, what the application does or refuses to do, and what it keeps. No row asserts an HTTP status code, a table or column shape, a log line's format, a module, function, file or locator name as the thing under test, whether a particular call was or was not made, or the presence of a library, framework or build tool. A locator, an API operation or a dump of the data store may be the instrument that observes an outcome; it is never the thing verified. Three consequences:
-  - **What class a row may state depends on what it drives (blueprint 4.1.1).** An **integration row**, which drives the HTTP API, asserts that the action was carried out or was not, and that nothing changed. "Confirmed" is the PRD's word (the back-end has carried the action out and reports success); "not confirmed" means it was not carried out and a read-back shows the list exactly as before. An integration row never says which code answered, never recognises an outcome by a code, and never says which class of refusal or rejection it was. A **rules-level (unit) row** drives the rules layer, whose output is the decision itself, and **may state the class of decision it returned**, in the PRD's section 4 words: "refuses" where the PRD's Refused applies (no usable identity, or a role that may not make the request) and "rejects" where its Rejected applies (any other reason), never the other way round. It states no code and does not name the type that carries the class; it never asserts that a function was called or that checks ran in an order. The difference a person sees between a refusal and a rejection is the Access denied modal against the API failure modal. It is asserted in the C, B and J rows, where it is observable (T-007-P1, T-007-P4, T-004-N8, T-004-N9, T-005-N7, T-008-N11, T-008-N12, T-011-N9, T-012-N4, T-012-N9, T-012-N10, T-001-N8, T-003-N4, T-003-N5, T-013-P21, T-013-N14, T-013-P22).
+  - **What class a row may state depends on what it drives (blueprint 4.1.1).** An **integration row**, which drives the HTTP API, asserts that the action was carried out or was not, and that nothing changed. "Confirmed" is the PRD's word (the back-end has carried the action out and reports success); "not confirmed" means it was not carried out and a read-back shows the list exactly as before. An integration row never says which code answered, never recognises an outcome by a code, and never says which class of refusal or rejection it was. A **rules-level (unit) row** drives the rules layer, whose output is the decision itself, and **may state the class of decision it returned**, in the PRD's section 4 words: "refuses" where the PRD's Refused applies (no usable identity, or a role that may not make the request) and "rejects" where its Rejected applies (any other reason), never the other way round. It states no code and does not name the type that carries the class; it never asserts that a function was called or that checks ran in an order. The difference a person sees between a refusal and a rejection is the Access denied modal against the API failure modal. It is asserted in the C, B and J rows, where it is observable (T-007-P1, T-007-P4, T-004-N8, T-004-N9, T-005-N7, T-008-N11, T-008-N12, T-011-N9, T-012-N4, T-012-N9, T-012-N10, T-001-N8, T-003-N4, T-003-N5, T-013-P21, T-013-N14, T-013-P22; and, among the journey pairs of 1.6, T-007-N10, T-008-P3, T-009-N17, T-012-N11, T-012-N12, T-012-N13, T-013-N16 and T-014-N2).
   - **"The request was not sent" is asserted as "nothing changed".** A C row with a fake server that would accept the request and holds every answer checks that, once the held answers are released, the data and the rows are as before.
   - **"Nothing is recorded about who did it"** (REQ-004.10, REQ-006.7) and "nothing is stored that the PRD does not describe" (REQ-017.3 to REQ-017.6) read the data store and assert about values, never about the names of tables or columns (T-004-N5, T-006-N4, T-017-N7).
 - **Where this plan and the blueprint now agree.** Blueprint 4.1.1 and 4.4 now say what this plan asserts: a row that drives the HTTP API asserts only that the action was carried out or was not and that nothing changed, with no status code as the thing verified or as an instrument; a rules-level row may state the class of decision the rules layer returned, with no code. The earlier conflict over the rules-level rows was settled in this plan's favour: a rules row may state the class, an integration row may not. Section 9.5 records the settlement; nothing in the blueprint is left to correct.
 - **REQ-005.3 is an admin's request only.** The blueprint reads REQ-005.3 as covering an admin's Borrow that names an admin (rejected). A member's Borrow that names the admin is a refusal and is verified once, under REQ-003.6 (T-003-N2, T-003-N3, T-003-N4, T-003-N5). T-005-N3 and T-005-N4 are an admin's requests; no REQ-005 row sends a member's.
 - **The bracket rule.** A row is bracketed only with criteria it can observe. An API row may carry a criterion that states a result in the data (an item on loan to Mia, an item gone from the list); the row reading is the client's rendering of that data and is checked by the C row. A criterion about what the interface shows (an icon, a modal, an inline message, a loader) is never bracketed on an API or rules row alone; the C, B or J row carries it. A rules-level row whose only candidate was such a criterion carries no bracket.
 - **The anchor rule.** A sentence that asserts something is absent, hidden, unchanged or not sent first asserts, with the word "first", that the surrounding thing was found: the rows were found, the list was rendered, the controls were enumerated, the modal was open. An absence assertion without that anchor passes on an application that renders nothing, so none is written. Where a build that renders rows and implements nothing could still satisfy the anchor, the anchor is the feature itself, shown working in the same row (T-003-N1, T-009-N4, T-010-N3, T-011-N2, T-012-N1, T-012-N2, T-013-N2). In each, the feature whose absence is claimed for the viewer is first found working for a user who has it: the borrower selection and its member buttons for Ada (T-003-N1), the Mark out of service and Restore icons for Ada (T-010-N3), the Delete x icon for Ada (T-011-N2), the Add field and Add card for Ada (T-009-N4, T-013-N2).
-- **The string rule.** Text is asserted exactly only where the blueprint pins it in section 12.9, with "–" as U+2013 and "…" as U+2026. No row asserts text that no source pins. The three strings of D-22 are asserted in T-001-P6 ("Choose a user"), T-001-P7 (the entry format) and T-009-P11 ("Name must be 100 characters or fewer."; also in T-009-N15 and T-013-N11).
+- **The string rule.** Text is asserted exactly only where the blueprint pins it in section 12.9, with "–" as U+2013 and "…" as U+2026. No row asserts text that no source pins. The three strings of D-22 are asserted in T-001-P6 ("Choose a user"), T-001-P7 (the entry format) and T-009-P11 ("Name must be 100 characters or fewer."; also in T-009-N15, T-013-N11 and, on the real stack, T-009-N17).
 - **Titles (blueprint DD-24).** In code, each test title begins with the test ID, then the labels of the criteria the test checks, then a description, for example `T-008-N3 REQ-008.1 REQ-008.4 REQ-008.8 two simultaneous borrows`. The labels are the run of `REQ-nnn.m` tokens that follows the ID; a label mentioned later in the description is a cross-reference and is not read as a label. A concurrency-pair test that blueprint section 8 does not tie to a criterion carries the ID, then `CONC` and the pair, and **no criterion label**, for example `T-010-N8 CONC return/mark`: these are T-006-N7, T-008-N8, T-008-N10, T-009-N12, T-010-N6, T-010-N7, T-010-N8, T-010-N9 and T-011-N8 (the table in 5.3 names each pair). A test with no labelled criterion that is not a pair test carries the ID and its description. This keeps the rubric's rule (the title starts with the ID) and the blueprint's evidence rule (a criterion is evidenced by a passing case whose title carries its label in the named report). **In Python the title is a function name**, which cannot hold a hyphen and must begin with `test_`, so the ID and the labels are spelled with underscores and the name opens with the ID: `test_T_008_N4_REQ_008_2_REQ_008_3_REQ_008_6_REQ_008_7_an_on_loan_or_out_of_service_item_cannot_be_borrowed`. The frozen `api/tests/conftest.py` recovers the canonical `T-008-N4` and `REQ-008.2` forms from the name and writes them into the JUnit report as the properties `row` and `criterion`, so the register is read from those properties and never from a transliterated function name. A name whose ID does not open it is refused by that same file, and the four reports of the other mechanisms carry the labels in their own titles, where a hyphen is allowed.
 - **The placement of the inline validation message (blueprint 12.8.1, from PRD section 4).** "By the Add field" is not a check. A row that shows the message applies the blueprint's four checks: (1) the message is a descendant of the Add card; (2) it comes after the Add field in document order; (3) laid out, the top edge of its box is not above the lower edge of the Add field's box and the two boxes do not overlap; (4) its whole box lies within the Add card's box. A C row runs in jsdom, which has no layout, and applies checks (1) and (2) only; a B row runs in Chromium and applies all four. The message is not a modal: no element with the alertdialog role exists when it shows. This is the placement in T-009-N1, T-009-N2, T-009-N8, T-009-N11, T-009-N14, T-009-N15, T-013-N9, T-013-N10, T-013-N11 and T-013-N12.
 - **No row sleeps.** A row that concerns the 900 ms Show loading demo waits for the list indicator to appear and then to disappear (C and J), or advances a clock the test controls (C). No row pauses for a fixed time.
@@ -105,6 +105,16 @@ The four review rows (T-015-P5, T-015-P6, T-015-P7, T-017-N9) follow D-27 and bl
 - **Who writes what.** The pre-review report is written by the pre-reviewing agent and the record by the user. The S4 builder writes neither and runs neither step (blueprint 4.1.3 and 9.2).
 - **The practical open point** of step 1 is OP-3 (section 2, item 7). The rows do not wait on it; step 1 cannot run until the means exist.
 
+### 1.6 Journey pairs, and the look list
+
+The founder's rule, added after the build (revision 5, section 4.6): **every behavioural requirement has at least one positive and one negative journey row**, a row that drives the real application end to end (mechanism J: Chromium against the running stack with the real API and database, kinds `e2e`, `production` and `restraint`, listed in `eval/e2e/rows.txt`). The component and unit rows add the fine detail and never stand in for that pair, because they run against a faked server or none, and only a journey row shows what the real server's answer does to the page. The unhappy path of a requirement is what the PRD says happens when the action is refused, rejected, invalid or never reaches the server, and on the real stack those are made as follows: a refusal by rewriting the identity of the page's own request, or by a member acting on a view another person has made stale; the four rejection kinds of blueprint 12.3.1 by a second person changing the item first (no longer in the right state; no longer there), by rewriting the body of an Add to a name the server will not accept (the name), and by stopping the database service so the real API cannot carry the action out (a server error); and a request that never reaches the server by aborting it with `page.route`. A request may also be **held** on its way to the server and then let go unchanged, so a row can see what the person is shown while an action is in progress and still receive the real answer (`holdNextRequest` in `eval/e2e/support/intercept.js`).
+
+**The look list** is the requirements whose criteria are all about how the page looks. Their end-to-end evidence stays with the browser rows (mechanism B), which measure the same production bundle the stack serves; the server's answers cannot change a computed style, so a journey row would measure the same thing on a slower path. REQ-014 is not on the list: six of its criteria are about rendering (REQ-014.1 to .3, .8 to .10) and keep their component rows, but REQ-014.4 to .7 are about operating the application by keyboard, whose effect is a real request, so REQ-014 has a journey pair. `eval/check_plan.py` reads the next line and fails the exam when a requirement not on it lacks either row of its pair.
+
+Look list: REQ-015.
+
+The rows added under this rule were written after the application existed. Their state cell records the state before this change: what each did against the merged application at `dbd640e` (run A of the change's rehearsal) and that each fails by absence when `app/compose.yml` is absent (run B). Section 1.2's remark that `passes:` is not used is about the rows frozen before the build.
+
 ---
 
 ## 2. What the inputs still leave unpinned
@@ -155,6 +165,8 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-002-N1 | Given Mia Member picked and rows in each of the three statuses, found first with their names and statuses, when the person activates each row and each row's name by mouse and by keyboard, then every button, link and input on the page is still one of the controls REQ-017.18 lists, none is a Details button, no row is a link, no dialog opens, and the page's URL and history length are unchanged. [REQ-002.4] | restraint | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-002-N2 | Given Mia Member picked and three items, one named `<img src=x onerror=alert(1)><button>Delete</button>`, when the list is shown, then the three rows are first found, the odd row's name reads exactly that text, and no image element, no extra button (the row has the same buttons as an ordinary Available row) and no call to `alert` comes from it. [REQ-002.1] | restraint | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-002-N3 | Given Mia Member picked and items in each status, none named with the word, found first as rows with their statuses, when each page state is rendered (list, loading, empty, each modal), then no element contains the word "Borrowed" in any letter case; and given one more item named "Borrowed Camera", the only element containing the word is inside that item's row name. [REQ-002.5] | restraint | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
+| T-002-P3 | Given the stack and four items created by Ada, one Available, one lent to Mia Member, one lent to Sam Member and one Out of service, when Mia Member is picked and the list is shown, then each of the four rows shows its item's name and exactly one status, the one the stack keeps: "Available", "On loan – Mia Member", "On loan – Sam Member" and "Out of service", and no other text. [REQ-002.1, REQ-002.2, REQ-002.3] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
+| T-002-N4 | Given the stack and, created by Ada, an Available item named `<img src=x onerror=alert(1)><button>Delete</button>` (with a unique suffix), an ordinary Available item and an item lent to Mia, when Mia Member is picked, every row's name and status is clicked and its name double-clicked, and Mia then borrows the ordinary item and its row reads "On loan – Mia Member", then the rows are first found with their statuses and the odd row's name reads exactly that text, no image element is in it and it has the same buttons as the ordinary Available row; after the clicks no dialog or alert has opened, the page outside the borrowed row holds the same elements and text as before them (no panel and no other view), the URL and the history length are unchanged, no row is or holds a link, and no element on the page carries the word "Borrowed". [REQ-002.1, REQ-002.4, REQ-002.5] | restraint | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-003: Member borrows for themselves
 
@@ -196,6 +208,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-004-N7 | Given a fresh database with two Available items, when Ada's identity sends a Borrow for the first that names nobody (with no body, with an empty object and with a null borrower) and then ones that name `4` and `999999999`, then none is confirmed and the first item is still Available with no borrower after each, and, as the anchor, Ada's Borrow of the second item naming Mia is confirmed and that item reads On loan to Mia Member. [REQ-004.11, REQ-004.12] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-004-N8 | Given Ada Admin picked, an Available row and the borrower modal open on it, when she chooses Mia Member and the fake server rejects the Borrow (in turn because the item is no longer in the right state, because the item is no longer there, as a server error, and because the request never reaches the server), then each time the row loader is gone, the API failure modal appears with a Close icon and a Retry icon, the Access denied modal does not, and the row still reads "Available". [REQ-004.11, REQ-004.12] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-004-N9 | Given the stack, Ada Admin picked and an Available item, when Ada chooses Mia Member in the borrower modal and the body of the outgoing request is rewritten to name nobody, and again to name `4`, then each time the API failure modal appears (not the Access denied modal), and a fresh look as Ada shows the item still Available with no borrower. [REQ-004.11, REQ-004.12] | e2e | S4 | fails: its case in `journey.xml` fails at the first page load (connection refused, port 8080) |
+| T-004-N10 | Given the stack, Ada Admin picked and an Available item, when she activates its Borrow icon, finds the borrower modal with its member buttons, and activates the modal's Close icon, and then marks a second item out of service and its row reads "Out of service", then the modal is gone, the row shows no row loader and still reads "Available", no modal has opened by the time the second action is confirmed, and a fresh look as Ada and the read-back show the item still Available with no borrower. [REQ-004.4] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-005: Admins cannot borrow for themselves
 
@@ -209,6 +222,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-005-N5 | Given the stack with two Available items, when Ada Admin lends one to Mia Member, returns it, lends it to Sam Member and returns it, then the borrower modal first listed the member buttons for Mia and Sam each time, and at every step of the journey no row read "On loan – Ada Admin". [REQ-005.2] | e2e | S4 | fails: its case in `journey.xml` fails at the first page load (connection refused, port 8080) |
 | T-005-N6 | Given a fresh database with one item On loan to Mia and one Available item, when Ada's identity sends a Borrow naming Ada for the loaned item and another naming Ada for item id 999999 (no such item), then neither is confirmed, the loaned item is still on loan to Mia and no item was created or changed, and, as the anchor, Ada's Borrow of the Available item naming Sam is confirmed and that item reads On loan to Sam Member. [REQ-005.4] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-005-N7 | Given the stack, Ada Admin picked and an Available item, when Ada chooses Mia Member in the borrower modal and the body of the outgoing request is rewritten to name Ada, then the API failure modal appears (not the Access denied modal), and a fresh look as Ada shows the item still Available with no borrower. [REQ-005.4] | e2e | S4 | fails: its case in `journey.xml` fails at the first page load (connection refused, port 8080) |
+| T-005-P2 | Given the stack, Ada Admin picked and an Available item, when she opens the borrower modal on it and chooses Sam Member, then the modal first offered exactly two member buttons, for Mia Member and Sam Member, and none for Ada and no text naming her, the row then reads "On loan – Sam Member", the rows are found and none reads "On loan – Ada Admin", and the read-back holds the item on loan to Sam. [REQ-005.1, REQ-005.2] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-006: Return a loaned item
 
@@ -226,6 +240,8 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-006-N4 | Given a fresh database and two items of the same name, R and T, each on loan to Mia and both set by the same route, when Mia returns R herself and Ada returns T, then both items are first found Available with no borrower, in a dump of every value in every table the application's database holds the rows of R and T are equal except for the item id, in the answers the application gives to Ada, to Mia and to Sam the entries for R and T are equal except for the item id, and the name "Ada Admin" occurs in the dump and in the answers only as the name of the user Ada Admin; so no stored value the application keeps or can show names the person who performed the return. [REQ-006.7] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-006-N6 | Given Ada Admin picked and a row On loan to Mia Member, when she activates Return and the fake server confirms, then the row first reads "Available", no modal is open, and outside the top bar no text, `title` attribute or `aria-label` on the page contains "Ada" or "Admin" in any letter case. [REQ-006.6] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-006-N7 | Given an item On loan to Mia, when Ada's and Mia's returns arrive in each serial order and, 20 times with a fresh loan each time, released together, then each time exactly one of the two is confirmed and the other is not, and the item ends Available with no borrower; and given a loan to Mia that Ada returned and Sam then borrowed, Mia's late return is not confirmed and the item is still on loan to Sam, while Ada's late return is confirmed and the item ends Available. [no labelled criterion; blueprint section 8, return / return, where no label is created] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
+| T-006-P8 | Given the stack and an item lent to Mia Member, when Mia Member is picked and activates the Return icon on that row, then the row reads "Available" and the read-back holds the item Available with no borrower. [REQ-006.1, REQ-006.5] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
+| T-006-N8 | Given the stack, an item lent to Mia Member and an item lent to Sam Member, when Mia Member is picked, then her own loan row is first found with the Return icon, Sam's row is found reading "On loan – Sam Member", and Sam's row has no button of any kind. [REQ-006.3] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-007: Refuse unauthorized actions with the Access denied modal
 
@@ -243,6 +259,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-007-N6 | Given a member as the acting user, when the application decides on returning another member's loan, deleting, adding, marking out of service and restoring, then each is refused, and first an admin is allowed each of the five and a borrower is allowed to return their own loan. [REQ-007.1, REQ-007.2, REQ-007.3, REQ-007.4, REQ-007.5] | unit | S1 | fails: no case in `unit.xml`; module collection error (`ModuleNotFoundError: app`) |
 | T-007-N8 | Given Mia Member picked with an Available row and a row On loan to her found first, when her Borrow and then her Return are each confirmed by the fake server, then the rows read "On loan – Mia Member" and "Available" and no Access denied modal appeared at any point. [REQ-007.6] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-007-N9 | Given a fresh database with one item On loan to Mia, one Available item and one Out of service item, when Mia's identity requests an add with an empty name, a delete of the On loan item, a mark out of service of item id 999999 (no such item) and a restore of the Available item, then none is confirmed and nothing has changed (no item created, the three items as before), and, as the anchor, Ada's add of a valid name is confirmed and the item appears Available. [REQ-007.2, REQ-007.3, REQ-007.4, REQ-007.5] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
+| T-007-N10 | Given the stack and Mia Member picked with an item on loan to her shown with its Return icon, when Ada (through the API) takes the item back and lends it to Sam, and Mia, whose page still shows the loan as hers, activates Return, then the Access denied modal appears reading "You do not have permission" with its OK icon as its only button, no Close icon, no Retry icon and no API failure modal, OK closes it, and the read-back and a fresh look as Mia show the item still on loan to Sam Member. [REQ-007.1, REQ-007.6, REQ-007.7, REQ-007.8] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-008: One active loan per item
 
@@ -261,6 +278,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-008-N10 | Given an Out of service item, when a borrow and a restore for it arrive in each serial order and, 20 times, released together, then the outcomes are restore confirmed then borrow confirmed (the item ends On loan to the borrower), or borrow not confirmed (the item is Out of service) then restore confirmed (the item ends Available), the final state equals one of the two serial orders, and a loan is never written to an Out of service item. [no labelled criterion; blueprint section 8, borrow / restore, which ties no label and whose title carries `CONC` and the pair. REQ-008.3 is evidenced by T-008-N4 and T-008-N2] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-008-N11 | Given the stack and an Available item that two browser contexts (Ada's and Sam's) both list as Available, when Ada's Borrow for Mia is confirmed in the first context and then Sam activates Borrow in the second, then the second shows the API failure modal (not the Access denied modal), and a fresh look shows the item still on loan to Mia Member and to no other borrower. [REQ-008.6, REQ-008.8] | e2e | S4 | fails: its case in `journey.xml` fails at the first page load (connection refused, port 8080) |
 | T-008-N12 | Given the stack and an Available item that two browser contexts both list as Available, when Ada marks it out of service in the first context and then Sam activates Borrow in the second, which still lists it Available, then the second shows the API failure modal and a fresh look shows the item still Out of service. [REQ-008.7] | e2e | S4 | fails: its case in `journey.xml` fails at the first page load (connection refused, port 8080) |
+| T-008-P3 | Given the stack and an Available item listed as Available by two browser contexts, Mia Member's and Sam Member's, when both activate Borrow on it, each request is held on its way to the server until both have left their browsers, and both are then let go together, then exactly one of them is shown the row reading "On loan – " and their own name and the other is shown the API failure modal (never the Access denied modal) with the row still reading "Available", the read-back holds the item on loan to the one whose Borrow was confirmed, and a fresh look in both contexts shows exactly one status on the row, naming that borrower. [REQ-008.1, REQ-008.4, REQ-008.8] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-009: Add equipment
 
@@ -292,6 +310,9 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-009-N13 | Given Ada Admin picked, a name typed and the fake server holding its answer to the Add, when she presses Enter, finds the Add loader shown, and then presses Enter again with the name still typed and again with the field cleared (the Add icon is replaced by the loader, so Enter is the only activation left), then no inline validation message and no modal appears, and once the answer is released as confirmed exactly one new row is in the list. [REQ-009.14] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-009-N14 | Given the production build in Chromium, Ada Admin picked, rows found and the Add card and the Add field found first, when she presses Enter with the field empty and, on a freshly loaded page, activates the Add icon with the field empty, then each time an inline validation message reading "Name is required." appears and passes all four checks of the placement (1.1): it is inside the Add card, after the Add field in document order, its top edge is not above the lower edge of the Add field and the two boxes do not overlap, and its whole box lies within the Add card's box; and no element with the alertdialog role exists. [REQ-009.4, REQ-009.5] | e2e | S3 | fails: no case in `browser.xml`; Playwright's web server cannot start (no `web/package.json`) |
 | T-009-N15 | Given the same page as T-009-N14, when she presses Enter on a freshly loaded page with the field empty, again with only spaces typed, and again with a name of 101 characters after trimming typed, then each time the inline validation message appears (reading "Name is required." for the first two and "Name must be 100 characters or fewer." for the third), it passes all four checks of the placement (1.1), no element with the alertdialog role exists and the API failure modal does not appear. [REQ-009.8, REQ-009.11] | e2e | S3 | fails: no case in `browser.xml`; Playwright's web server cannot start (no `web/package.json`) |
+| T-009-N16 | Given the stack, Ada Admin picked and the Add card and the Add field found, when she presses Enter with the field empty, activates the Add icon with the field empty, types only spaces and presses Enter, and types only a tab and activates the Add icon, each on a freshly loaded page, then each time the inline validation message reads "Name is required." and passes all four checks of the placement (1.1), no element with the alertdialog role exists, and afterwards the stack lists the same number of items as before. [REQ-009.4, REQ-009.5, REQ-009.6, REQ-009.8] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
+| T-009-N17 | Given the stack, Ada Admin picked and the Add card found, when she types a name of 101 characters after trimming with spaces around it and presses Enter, and then, on a freshly loaded page, types a short name and presses Enter while the request leaving the browser is rewritten to carry a name of 101 characters, then the first time the inline validation message reads exactly "Name must be 100 characters or fewer.", the second time the real server's rejection of the name shows a non-empty inline validation message, each time it passes all four checks of the placement (1.1) and the API failure modal does not appear, and afterwards the stack lists the same number of items as before and none under any of the three names. [REQ-009.10, REQ-009.11, REQ-009.15] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
+| T-009-N18 | Given the stack, Ada Admin picked and the Add icon found, when she types a unique name, presses Enter with the request held on its way to the real server, presses Enter in the Add field twice more, and the request is then let go, then while it is held the Add loader is shown in the Add card, no Add icon is, the item is not in the list and no inline validation message and no modal appear, and once the real answer arrives the Add loader is gone and exactly one item of that name is in the list and in the read-back, reading "Available". [REQ-009.13, REQ-009.14] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-010: Out-of-service status of equipment
 
@@ -317,6 +338,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-010-N7 | Given an Available item and, separately, an Out of service item, when a delete and a mark (respectively a restore) for the same item arrive in each serial order and, 20 times, released together, then the outcomes are delete confirmed then mark (restore) not confirmed, or mark (restore) confirmed then delete confirmed, and a deleted item never reappears with a status. [no labelled criterion; blueprint section 8, delete / mark and delete / restore] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-010-N8 | Given an item On loan to Mia, when a return and a mark out of service for it arrive in each serial order and, 20 times with a fresh loan each time, released together, then the outcomes are return confirmed then mark confirmed (the item ends Out of service), or mark not confirmed (the item is On loan) then return confirmed (the item ends Available), the final state equals one of the two serial orders, and an On loan item is never marked out of service. [no labelled criterion; blueprint section 8, return / mark, where no label is created] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-010-N9 | Given an item On loan to Mia and, separately, an Out of service item, when a return and a restore for the same item arrive in each serial order and, 20 times for each starting state, released together, then from On loan exactly one of the two is confirmed (return confirmed then restore not confirmed because the item is now Available, or restore not confirmed because the item is On loan then return confirmed) and the item ends Available, and from Out of service the restore is confirmed and the return is not confirmed in both orders and the item ends Available. [no labelled criterion; blueprint section 8, return / restore from both start states] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
+| T-010-N10 | Given the stack and three items created by Ada, one Available, one lent to Mia and one Out of service, when Ada Admin is picked and then Mia Member and Sam Member in turn, each on a freshly loaded page, then for Ada the Mark out of service icon is first found on the Available row and the Restore icon on the Out of service row, and neither is on the On loan row, no Mark out of service is on the Out of service row and no Restore is on the Available row; and for each member the role badge is first found reading "member", the On loan row reading "On loan – Mia Member" and the Available row with the Borrow icon, and no row shows a Mark out of service or a Restore icon. [REQ-010.2, REQ-010.5, REQ-010.7] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-011: Delete equipment with confirmation
 
@@ -337,6 +359,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-011-N7 | Given an Available item and an item On loan to Mia, when a borrow and a delete of the Available item, and a return and a delete of the loaned item, each arrive in both serial orders and, 20 times each, released together, then the outcomes are borrow confirmed then delete not confirmed, or delete confirmed then borrow not confirmed; and return confirmed then delete confirmed, or delete not confirmed then return confirmed; a loaned item is never deleted. [REQ-011.8] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-011-N8 | Given an Available item, when two deletes of it arrive in each order and, 20 times with a fresh item each time, released together, then exactly one is confirmed and the other is not each time, and the item is gone. [no labelled criterion; blueprint section 8, delete / delete] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-011-N9 | Given the stack and an Available item that Ada's context lists with Delete offered, when Mia borrows it in a second context and then Ada confirms the delete, then Ada's context shows the API failure modal (not the Access denied modal), and a fresh look shows the item still listed and still On loan to Mia Member. [REQ-011.8] | e2e | S4 | fails: its case in `journey.xml` fails at the first page load (connection refused, port 8080) |
+| T-011-N10 | Given the stack, Ada Admin picked and an Available item with its Delete x icon found, when she activates it and then the confirm-delete modal's Cancel icon, then the modal first opened with the title "Delete <item name>?", it is gone, the row shows no row loader and still reads "Available", and the read-back and a fresh look still list the item as Available. [REQ-011.3, REQ-011.5] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-012: Outcome of a server-call action
 
@@ -360,6 +383,10 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-012-N8 | Given a fresh database with one item that Ada has deleted, one Available item, and the id 999999 that never existed, when Mia's identity requests a Borrow, and Ada's identity requests a Return, a Delete, a Mark out of service and a Restore, each for the deleted item and for the id that never existed, then none is confirmed, nothing is created or changed (the read-back is the same and the deleted item has not reappeared), and, as the anchor, Mia's Borrow of the Available item is confirmed and that item reads On loan to Mia Member. [REQ-012.16] | integration | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-012-N9 | Given Ada Admin picked with an Available row, an On loan row and an Out of service row found, when she activates Borrow (choosing Mia Member), Return, Delete after Confirm, Mark out of service and Restore on rows of the right status and the fake server rejects each because the item is no longer there, then each time the row loader is gone, the API failure modal appears with a Close icon and a Retry icon (the Access denied modal does not), and the list is as before. [REQ-012.16] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-012-N10 | Given the stack and an item that two browser contexts both list, when the second context deletes it and then the first context activates Mark out of service on it, then the first context shows the API failure modal with a Close icon and a Retry icon and its row is unchanged, and a fresh look shows the item gone. [REQ-012.16] | e2e | S4 | fails: its case in `journey.xml` fails at the first page load (connection refused, port 8080) |
+| T-012-P10 | Given the stack, an Available item for Mia and, for Ada, an Available item and an Out of service item, when Mia activates Borrow and Ada activates Mark out of service and Restore, each request held on its way to the real server and then let go unchanged, then while each is held the affected row shows its row loader, its status reads as before and the list on screen is exactly as before the request, and once the real answer arrives the loader is gone and the row reads "On loan – Mia Member", "Out of service" and "Available" respectively, as the read-back holds. [REQ-012.1, REQ-012.2, REQ-012.3, REQ-012.9, REQ-012.10, REQ-012.11] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
+| T-012-N11 | Given the stack and Ada Admin's page listing an item on loan to Mia, an Available item and an Out of service item, when Ada (through the API) returns the first, lends the second to Sam and restores the third, and the page, which still shows them as they were, then activates Return, Mark out of service and Restore on them, then each time the API failure modal appears with a Close icon and a Retry icon (not the Access denied modal), the row shows no loader and still shows the status it showed, Close closes the modal, and the read-back and a fresh look show each item as the API left it: Available, on loan to Sam Member, Available. [REQ-012.5, REQ-012.6, REQ-012.12] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
+| T-012-N12 | Given the stack and Ada Admin's page listing an Available item, an item on loan to Mia, an Available item and an Out of service item, when Ada (through the API) takes the loan back and deletes all four, and the page then activates Borrow (choosing Mia Member), Return, Delete after Confirm and Restore on them, then each time the API failure modal appears with a Close icon and a Retry icon (not the Access denied modal), the row shows no loader and still shows the status it showed, and the read-back and a fresh look list none of the four. [REQ-012.16] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
+| T-012-N13 | Given the stack, Ada Admin picked and two Available items, when the database service is stopped (`docker compose stop db`) and Ada lends the first to Mia, marks the second out of service and adds a uniquely named item, and the database is then started again, then each time the API failure modal appears with a Close icon and a Retry icon (not the Access denied modal) and no row loader and no Add loader while it shows, the list on screen is unchanged, and once the database is back the read-back holds both items Available with no borrower and no item of the new name; and then Retry in the Add's modal repeats the Add with the same name, the item appears as "Available" and the read-back holds it. [REQ-012.5, REQ-012.6, REQ-012.12, REQ-012.13, REQ-012.14] | production | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-013: List page states
 
@@ -404,6 +431,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-013-N13 | Given Ada Admin picked in the Show empty list view ("No equipment yet" first found) with a name typed, when the fake server fails the Add (in turn as a server error, as a rejection of the kind the item is no longer in the right state, and as a request that never reaches the server), then each time the API failure modal appears with a Close icon and a Retry icon, the Access denied modal does not, the fake server's data holds no new item, and "No equipment yet" is still shown with no list of rows; and when she activates Close the modal closes and "No equipment yet" is still shown. [REQ-013.22] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-013-N14 | Given Ada Admin picked and the fake server refusing the list request, when the page is shown, then the Access denied modal appears with the body "You do not have permission" and a single OK icon, and the API failure modal does not exist, so no Close icon and no Retry icon is present: a refused list fetch is not a failure. [REQ-013.23] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-013-N15 | Given Ada Admin picked, the first list request failed so that the API failure modal is found with its Close and Retry icons, and any second list request held by the fake server so that a repeated fetch would show the list indicator, when she activates Close, then the modal closes, the list indicator is not shown, and it is still not shown once everything held is released. [REQ-013.24] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
+| T-013-N16 | Given the stack and Ada Admin picked with the list request after the pick made to never reach the server, so that the API failure modal is found, when she activates Retry with the repeated request held on its way to the server and the repeat then never reaches the server either, and she then activates Close with any further list request held and clicks the top bar, then while the repeat is held the modal is gone and the list indicator is shown, after it fails the API failure modal appears again with a Close icon and a Retry icon (not the Access denied modal), and after Close the modal is gone and the list indicator is not shown, before or after the click. [REQ-013.24, REQ-013.26] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-014: Labelled icon buttons and operable modals
 
@@ -421,6 +449,8 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-014-P11 | Given Ada Admin picked, when the four state-demo controls are read, then their tooltips are "Loading", "Empty list", "API failure" and "Access denied" and their accessible labels are "Show loading", "Show empty list", "Show API failure" and "Show access denied". [REQ-014.10] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
 | T-014-P12 | Given the production build in Chromium with Ada Admin picked and rows found, when the person uses the keyboard alone and takes each of the four state-demo controls in turn, each on its own freshly loaded page with the real list showing and nothing else activated on that page, then Tab reaches that control and Enter or Space activates it with its normal effect: Show loading shows the list indicator, Show empty list shows "No equipment yet", Show API failure opens the API failure modal and Show access denied opens the Access denied modal. Neither the Add field nor the Add icon is used on any of these pages, so no Add is ever made from the Show empty list view here; that behaviour has its own rows (T-013-P16 to T-013-N13). [REQ-014.6] | e2e | S3 | fails: no case in `browser.xml`; Playwright's web server cannot start (no `web/package.json`) |
 | T-014-N1 | Given the same states as T-014-P1, with the eleven icon controls found first, when the content of each is read, then none holds a text node or any content other than its one inline graphic, so no caption sits inside or in place of an icon (the status badge and the row name beside a row's icons are not part of any button). [REQ-014.1] | unit | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
+| T-014-P13 | Given the stack, Ada Admin picked and two Available items, when with the keyboard alone she moves the focus to the first item's Borrow icon and presses Enter, moves it to Mia Member's member button and presses Space, then moves it to the second item's Delete x icon and presses Enter and to the Confirm icon and presses Enter, then the borrower modal opens, the first row reads "On loan – Mia Member", the confirm-delete modal opens, the second item is no longer in the list, and the read-back holds the loan to Mia and no second item. [REQ-014.5, REQ-014.6, REQ-014.7] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
+| T-014-N2 | Given the stack, Ada Admin picked and an Available item, when with the keyboard alone she sets off its Mark out of service, first with the request's identity rewritten to Mia's so that the real server refuses it, and then with the request made to never reach the server, then the Access denied modal and then the API failure modal appear, each with the role alertdialog, the keyboard reaches OK and Enter closes the first, and reaches Close and Space closes the second, and afterwards the list on screen, the read-back and a fresh look show the item still Available. [REQ-014.4, REQ-014.5] | e2e | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ### REQ-015: Apple-style look with uniform rows
 
@@ -468,6 +498,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 | T-017-N7 | Given a fresh database and the application after each write operation has been exercised as its allowed role (add, borrow for a member, return, mark out of service, restore, delete), when a dump of every value in every table the application's database holds is taken and the answers to every read are taken as Ada, as Mia and as Sam, then the dump first holds the three seeded users and the exercised items, every value in the dump and in the answers is an item's id, name, status or borrower, or a user's id, name or role, so no date, time, address or note, and no reminder, notification, reservation, due date or history entry, is kept or shown, and a Borrow followed by its Return, and a Mark followed by its Restore, leave the dump exactly as it was before. [REQ-017.3, REQ-017.4, REQ-017.5, REQ-017.6] | restraint | S2 | fails: its case in `integration.xml` errors at setup (`ModuleNotFoundError: app` in the fixture) |
 | T-017-N9 | Review in two steps (D-27; 1.5; blueprint 4.1.3), the non-goal walk-through. **Step 1, the agent pre-review, runs first.** An agent in a session started for this task, never the agent that built the candidate, is given the merged candidate running as the stack, by its commit hash; the fourteen criteria REQ-017.2 to REQ-017.6, REQ-017.8 to REQ-017.11, REQ-017.13 to REQ-017.16 and REQ-017.19 and the non-goals of PRD section 7; and the conversation trail (the list of blueprint 4.1.3; 1.5). It examines the build against the fourteen criteria and writes `evidence/review/non-goal-walkthrough-prereview.md`. That report must record the candidate commit hash it read, the date and time, each input named and the session it ran in; list each gap, traced to the criterion and to the place in the trail the expectation came from, and report a gap it cannot trace as its own observation, labelled as such, neither dropped nor given an invented trace; and hold the section "What I could not judge"; it gives no verdict and does not use `found none` as one. **Step 2, the user's review.** The user reads that report alongside the build, goes through the interface as Ada Admin and as Mia Member once for each non-goal, and records in `evidence/review/non-goal-walkthrough.md` an opening line naming the report read (its path and the candidate commit hash it records) and one line for each of the fourteen criteria, each reading `found none` or describing the finding, with the screens visited as Ada Admin and as Mia Member, the user's name, the date and the candidate commit hash. **The pass condition is the user's record alone.** The candidate fails the criterion of any line that describes a finding; a missing line, name, date or hash, or a record whose opening line does not name a valid report for the candidate's hash, counts as not recorded and fails in the same way, never passing by default. The report is an input and never a result this row asserts: a gap in it fails nothing, and the agent's "found none" closes nothing, because the user may find what the agent missed. [REQ-017.2, REQ-017.3, REQ-017.4, REQ-017.5, REQ-017.6, REQ-017.8, REQ-017.9, REQ-017.10, REQ-017.11, REQ-017.13, REQ-017.14, REQ-017.15, REQ-017.16, REQ-017.19] | review | S4 | cannot run: no merged candidate exists to pre-review or to walk through, and neither the pre-review report nor the user's record exists (S4 builds the stack and holds the directory; needs S2 and S3; OP-3, section 2) |
 | T-017-N10 | Given the page in each state (before a pick, loading, list, empty, each modal, each demo state) for Ada and for Mia, with the switcher, the row statuses and the empty text found first, when all text, `title` and `aria-label` values are scanned, then none contains "trial", "mockup", "sample data" or "nothing is saved" in any letter case. [REQ-017.19] | restraint | S3 | fails: no case in `component.xml`; test file fails to load (`src/App.jsx` not found) |
+| T-017-P3 | Given the stack and three items created by Ada, one in each status, when every `button`, `input`, `select`, `a` and `textarea` and every element with a `tabindex` or a button role is enumerated for Ada on the list, for Ada with the borrower modal and then the confirm-delete modal open, and for Mia on the list, then each view first holds the controls expected for it (for Ada the switcher, the Add field and Add icon, the five row icons and the four state demos; in the modals their member buttons and Close, or Cancel and Confirm; for Mia the switcher, Borrow, Return on her own loan and the four state demos) and no control outside the list of REQ-017.18 exists, every button carries the tooltip and accessible label its control is pinned to (blueprint 12.8.2), and Mia is offered no Add field, Add icon, Mark out of service, Restore or Delete x. [REQ-017.18] | restraint | S4 | passes: against the merged application at `dbd640e` (run A, 1.6); fails by absence without `app/compose.yml` (run B) |
 
 ---
 
@@ -475,7 +506,7 @@ Columns: ID, Given / When / Then, kind, owner story, state before the build. Own
 
 Nothing is blocked. The PRD has no open question (its former N4 was closed by D-26), so no row waits on one. The one silence that remains is the blueprint's GAP-1, about the page around the failed-list-fetch modal (9.3); no row asserts anything it leaves open.
 
-Sections 4.1 to 4.4 are the record of revision 3, kept as written because the retired IDs in 4.2 must stay listed and are never reused. Section 4.5 is the record of revision 4.
+Sections 4.1 to 4.4 are the record of revision 3, kept as written because the retired IDs in 4.2 must stay listed and are never reused. Section 4.5 is the record of revision 4, and section 4.6 of revision 5.
 
 ### 4.1 The 22 rows rewritten or dropped under the assertion rule (revision 3)
 
@@ -594,6 +625,33 @@ No test of revision 3 is retired and no ID changes; 20 tests are added (237 to 2
 
 **GAP-1 and OP-3** are recorded: GAP-1 in 9.3 and OP-3 in section 2, item 7. No answer is given to either.
 
+### 4.6 Revision 5: a journey pair for every behavioural requirement
+
+Written after the build, on the founder's rule (1.6). No row is retired, no row's assertion changes and no ID changes; 21 journey rows are added (258 to 278). Before this revision, 7 of the 17 requirements had both a positive and a negative journey row (REQ-001, 003, 004, 011, 012, 013, 016); REQ-002, REQ-014 and REQ-015 had no journey row at all, six had no positive one and seven no negative one, so Return's refusals, Add's rejections, the Access denied modal of a real refusal and Out of service were shown against the fake server only. After it, every requirement but REQ-015, the look list, has its pair, and `eval/check_plan.py` fails the exam if one goes missing.
+
+| ID | Covers | Kind | What the real stack shows that no journey row showed before |
+|---|---|---|---|
+| T-002-P3, T-002-N4 | REQ-002.1 to .5 | e2e, restraint | The statuses as the server keeps them; a name the server hands back that looks like markup, shown as text; no row opening anything |
+| T-004-N10 | REQ-004.4 | e2e | The borrower modal's Close lends nothing |
+| T-005-P2 | REQ-005.1, .2 | e2e | The borrower modal offers the two members and never the admin; the lend names the member |
+| T-006-P8, T-006-N8 | REQ-006.1, .3, .5 | e2e | A member returns her own loan; she has no action on another member's |
+| T-007-N10 | REQ-007.1, .6 to .8 | e2e | A member's own Return of a loan that has become another member's, refused by the real server: the Access denied modal, its single OK, nothing changed |
+| T-008-P3 | REQ-008.1, .4, .8 | e2e | Two members' Borrows at the same moment from two contexts: exactly one confirmed, the other shown the API failure modal |
+| T-009-N16, T-009-N17, T-009-N18 | REQ-009.4 to .6, .8, .10, .11, .13 to .15 | e2e | An empty or blank name; a name the real server rejects for its length (the name kind of 12.3.1), shown inline and not as a failure; a second Enter while the real Add is held |
+| T-010-N10 | REQ-010.2, .5, .7 | e2e | Mark out of service and Restore only where they apply, and never for a member |
+| T-011-N10 | REQ-011.3, .5 | e2e | The confirm-delete modal names the item, and Cancel deletes nothing |
+| T-012-P10 | REQ-012.1 to .3, .9 to .11 | e2e | The row loader while the real answer is held, the list unchanged until it arrives |
+| T-012-N11 | REQ-012.5, .6, .12 | e2e | The wrong-state kind of 12.3.1 for Return, Mark and Restore, from a stale view |
+| T-012-N12 | REQ-012.16 | e2e | The gone kind for Borrow, Return, Delete and Restore (T-012-N10 had Mark only) |
+| T-012-N13 | REQ-012.5, .6, .12 to .14 | production | The server-error kind, with the database service stopped: no loader beside the modal, nothing kept, and Retry carrying out the Add once the database is back |
+| T-013-N16 | REQ-013.24, .26 | e2e | A repeated list fetch that fails again, and Close not fetching |
+| T-014-P13, T-014-N2 | REQ-014.4 to .7 | e2e | The keyboard alone setting off real effects, and dismissing the modals the real server's refusal and a failed request open |
+| T-017-P3 | REQ-017.18 | restraint | The control inventory on the real stack |
+
+**The harness additions** are instruments, not rows: `holdNextRequest` in `eval/e2e/support/intercept.js` (a request held and let go unchanged, or made to fail); `returnItem`, `restoreItem` and `deleteItem` in `support/api.js` (another person's action, made through the API as Ada); the four placement checks, the keyboard walk and the control enumeration in `support/app.js`; and the three strings of blueprint 12.9 the new rows quote, in `support/strings.js`. No existing row's assertion changed.
+
+**What a stale view is.** The page is not live (blueprint DD-17): it reads the list on a pick or a Retry and otherwise changes only from a confirmed answer. A row that needs the item to have changed under the person's eyes changes it through the API as Ada, the way rows build the state they need (1.3), and the page then acts on what it still shows. The concurrency rows of section 8 (mechanism I) remain the evidence of every pair's guarantee; the journey rows show what a person whose request lost is shown.
+
 ---
 
 ## 5. Coverage, checked in both directions
@@ -615,11 +673,11 @@ No test of revision 3 is retired and no ID changes; 20 tests are added (237 to 2
 | REQ-001.9 | C | T-001-N5 | covered |
 | REQ-001.10 | C | T-001-P6 | covered |
 | REQ-001.11 | C | T-001-P7 | covered |
-| REQ-002.1 | C | T-002-P1, T-002-N2 | covered |
-| REQ-002.2 | C | T-002-P1 | covered |
-| REQ-002.3 | C | T-002-P1 | covered |
-| REQ-002.4 | C | T-002-N1 | covered |
-| REQ-002.5 | C | T-002-N3 | covered |
+| REQ-002.1 | C, J | T-002-P1, T-002-N2; J (1.6): T-002-P3, T-002-N4 | covered |
+| REQ-002.2 | C, J | T-002-P1; J (1.6): T-002-P3 | covered |
+| REQ-002.3 | C, J | T-002-P1; J (1.6): T-002-P3 | covered |
+| REQ-002.4 | C, J | T-002-N1; J (1.6): T-002-N4 | covered |
+| REQ-002.5 | C, J | T-002-N3; J (1.6): T-002-N4 | covered |
 | REQ-003.1 | C | T-003-P1 | covered |
 | REQ-003.2 | C | T-003-P2 | covered |
 | REQ-003.3 | C | T-003-P2 | covered |
@@ -631,7 +689,7 @@ No test of revision 3 is retired and no ID changes; 20 tests are added (237 to 2
 | REQ-004.1 | C | T-004-P1 | covered |
 | REQ-004.2 | C | T-004-P2 | covered |
 | REQ-004.3 | C | T-004-N1 | covered |
-| REQ-004.4 | C | T-004-N2 | covered |
+| REQ-004.4 | C, J | T-004-N2; J (1.6): T-004-N10 | covered |
 | REQ-004.5 | C | T-004-P3 | covered |
 | REQ-004.6 | C, J | C: T-004-P4; J: T-004-P7 (also I: T-004-P5) | covered |
 | REQ-004.7 | C | T-004-P8 | covered |
@@ -640,80 +698,80 @@ No test of revision 3 is retired and no ID changes; 20 tests are added (237 to 2
 | REQ-004.10 | I | I: T-004-N5 | covered |
 | REQ-004.11 | U, I, C, J | U: T-004-N6; I: T-004-N7; C: T-004-N8; J: T-004-N9 | covered |
 | REQ-004.12 | U, I, C, J | U: T-004-N6; I: T-004-N7; C: T-004-N8; J: T-004-N9 | covered |
-| REQ-005.1 | C | T-005-N1 | covered |
-| REQ-005.2 | C, J | C: T-005-N2; J: T-005-N5 (also I: T-005-P1) | covered |
+| REQ-005.1 | C, J | T-005-N1; J (1.6): T-005-P2 | covered |
+| REQ-005.2 | C, J | C: T-005-N2; J: T-005-N5 (also I: T-005-P1); J (1.6): T-005-P2 | covered |
 | REQ-005.3 | U, I | U: T-005-N4; I: T-005-N3 (an admin's request only; a member naming the admin is verified once, under REQ-003.6) | covered |
 | REQ-005.4 | U, I, J | U: T-005-N4; I: T-005-N3, T-005-N6; J: T-005-N7 | covered |
-| REQ-006.1 | C | T-006-P1 | covered |
+| REQ-006.1 | C, J | T-006-P1; J (1.6): T-006-P8 | covered |
 | REQ-006.2 | C | T-006-P2 | covered |
-| REQ-006.3 | C | T-006-N1 | covered |
+| REQ-006.3 | C, J | T-006-N1; J (1.6): T-006-N8 | covered |
 | REQ-006.4 | C | T-006-P3 | covered |
-| REQ-006.5 | C, J | C: T-006-P3; J: T-006-P7 (also I: T-006-P4, T-006-P5) | covered |
+| REQ-006.5 | C, J | C: T-006-P3; J: T-006-P7 (also I: T-006-P4, T-006-P5); J (1.6): T-006-P8 | covered |
 | REQ-006.6 | C, J | C: T-006-N6; J: T-006-P7 | covered |
 | REQ-006.7 | I | I: T-006-N4 | covered |
-| REQ-007.1 | U, I | U: T-007-N6; I: T-007-N1 | covered |
+| REQ-007.1 | U, I, J | U: T-007-N6; I: T-007-N1; J (1.6): T-007-N10 | covered |
 | REQ-007.2 | U, I | U: T-007-N6; I: T-007-N2, T-007-N9 | covered |
 | REQ-007.3 | U, I | U: T-007-N6; I: T-007-N3, T-007-N9 | covered |
 | REQ-007.4 | U, I | U: T-007-N6; I: T-007-N4, T-007-N9 | covered |
 | REQ-007.5 | U, I | U: T-007-N6; I: T-007-N5, T-007-N9 | covered |
-| REQ-007.6 | C, J | C: T-007-P1, T-007-N8; J: T-007-P4 | covered |
-| REQ-007.7 | C | T-007-P2 | covered |
-| REQ-007.8 | C | T-007-P3 | covered |
-| REQ-008.1 | D, I | D: T-008-N7 (the store refuses an item On loan with no borrower, and a borrower on an item not On loan); I: T-008-P1 (after a confirmed Borrow, exactly one borrower), T-008-N3 (after each of twenty rounds of two simultaneous Borrows, each item has at most one borrower and the contested item exactly one). These three are the labelled evidence. No mixed sequence of actions is claimed, and no check after the other concurrency tests of section 8 (the borrow / return pair T-008-N8 also asserts "never two borrowers" but carries no label, 1.1) | covered |
+| REQ-007.6 | C, J | C: T-007-P1, T-007-N8; J: T-007-P4; J (1.6): T-007-N10 | covered |
+| REQ-007.7 | C, J | T-007-P2; J (1.6): T-007-N10 | covered |
+| REQ-007.8 | C, J | T-007-P3; J (1.6): T-007-N10 | covered |
+| REQ-008.1 | D, I, J | D: T-008-N7 (the store refuses an item On loan with no borrower, and a borrower on an item not On loan); I: T-008-P1 (after a confirmed Borrow, exactly one borrower), T-008-N3 (after each of twenty rounds of two simultaneous Borrows, each item has at most one borrower and the contested item exactly one). These three are the labelled evidence. No mixed sequence of actions is claimed, and no check after the other concurrency tests of section 8 (the borrow / return pair T-008-N8 also asserts "never two borrowers" but carries no label, 1.1); J (1.6): T-008-P3 | covered |
 | REQ-008.2 | U, I | U: T-008-N4; I: T-008-N1 | covered |
 | REQ-008.3 | U, I | U: T-008-N4; I: T-008-N2 (the borrow / restore pair T-008-N10 carries no label, 1.1) | covered |
-| REQ-008.4 | I | T-008-N3 | covered |
+| REQ-008.4 | I, J | T-008-N3; J (1.6): T-008-P3 | covered |
 | REQ-008.5 | C | T-008-P2 | covered |
 | REQ-008.6 | U, I, J | U: T-008-N4; I: T-008-N1, T-008-N6; J: T-008-N11 | covered |
 | REQ-008.7 | U, I, J | U: T-008-N4; I: T-008-N2, T-008-N6, T-008-N9; J: T-008-N12 | covered |
-| REQ-008.8 | I, J | I: T-008-N3; J: T-008-N11 | covered |
+| REQ-008.8 | I, J | I: T-008-N3; J: T-008-N11; J (1.6): T-008-P3 | covered |
 | REQ-009.1 | C | T-009-P1 | covered |
 | REQ-009.2 | C, J | C: T-009-P2, T-009-P6; J: T-009-P5 (also I: T-009-P4) | covered |
 | REQ-009.3 | C | T-009-P3 | covered |
-| REQ-009.4 | C, B | C: T-009-N1; B: T-009-N14 | covered |
-| REQ-009.5 | C, B | C: T-009-N2; B: T-009-N14 | covered |
-| REQ-009.6 | U, C, I | U: T-009-N10; C: T-009-N3; I: T-009-N5 | covered |
+| REQ-009.4 | C, B, J | C: T-009-N1; B: T-009-N14; J (1.6): T-009-N16 | covered |
+| REQ-009.5 | C, B, J | C: T-009-N2; B: T-009-N14; J (1.6): T-009-N16 | covered |
+| REQ-009.6 | U, C, I, J | U: T-009-N10; C: T-009-N3; I: T-009-N5; J (1.6): T-009-N16 | covered |
 | REQ-009.7 | C | T-009-N4 | covered |
-| REQ-009.8 | C, B | C: T-009-N1, T-009-N2; B: T-009-N15 | covered |
+| REQ-009.8 | C, B, J | C: T-009-N1, T-009-N2; B: T-009-N15; J (1.6): T-009-N16 | covered |
 | REQ-009.9 | I, C | I: T-009-N9; C: T-009-P10 | covered |
-| REQ-009.10 | U, I | U: T-009-N10; I: T-009-N7 | covered |
-| REQ-009.11 | C, B | C: T-009-N8, T-009-N11; B: T-009-N15 | covered |
+| REQ-009.10 | U, I, J | U: T-009-N10; I: T-009-N7; J (1.6): T-009-N17 | covered |
+| REQ-009.11 | C, B, J | C: T-009-N8, T-009-N11; B: T-009-N15; J (1.6): T-009-N17 | covered |
 | REQ-009.12 | U, I, C | U: T-009-P7; I: T-009-P8; C: T-009-P9 | covered |
-| REQ-009.13 | C | T-009-P12 | covered |
-| REQ-009.14 | C | T-009-N13 | covered |
-| REQ-009.15 | C | T-009-P11 | covered |
+| REQ-009.13 | C, J | T-009-P12; J (1.6): T-009-N18 | covered |
+| REQ-009.14 | C, J | T-009-N13; J (1.6): T-009-N18 | covered |
+| REQ-009.15 | C, J | T-009-P11; J (1.6): T-009-N17 | covered |
 | REQ-010.1 | C | T-010-P1 | covered |
-| REQ-010.2 | C | T-010-N1 | covered |
+| REQ-010.2 | C, J | T-010-N1; J (1.6): T-010-N10 | covered |
 | REQ-010.3 | C, I, J | C: T-010-P3, T-010-P9; I: T-010-P5; J: T-010-P7 | covered |
 | REQ-010.4 | C | T-010-P2 | covered |
-| REQ-010.5 | C | T-010-N2 | covered |
+| REQ-010.5 | C, J | T-010-N2; J (1.6): T-010-N10 | covered |
 | REQ-010.6 | C, I, J | C: T-010-P4, T-010-P10; I: T-010-P6, T-010-P11; J: T-010-P7 | covered |
-| REQ-010.7 | C | T-010-N3 | covered |
+| REQ-010.7 | C, J | T-010-N3; J (1.6): T-010-N10 | covered |
 | REQ-011.1 | C | T-011-P1 | covered |
 | REQ-011.2 | C | T-011-N1 | covered |
-| REQ-011.3 | C | T-011-P2 | covered |
+| REQ-011.3 | C, J | T-011-P2; J (1.6): T-011-N10 | covered |
 | REQ-011.4 | C | T-011-P3 | covered |
-| REQ-011.5 | C | T-011-N3 | covered |
+| REQ-011.5 | C, J | T-011-N3; J (1.6): T-011-N10 | covered |
 | REQ-011.6 | C | T-011-P4 | covered |
 | REQ-011.7 | C, J | C: T-011-P4; J: T-011-P7 (also I: T-011-P5) | covered |
 | REQ-011.8 | U, I, J | U: T-011-N5; I: T-011-N4, T-011-N7; J: T-011-N9 | covered |
 | REQ-011.9 | C | T-011-N2 | covered |
-| REQ-012.1 | C | T-012-P1 | covered |
-| REQ-012.2 | C | T-012-P1 | covered |
-| REQ-012.3 | C | T-012-P2 | covered |
+| REQ-012.1 | C, J | T-012-P1; J (1.6): T-012-P10 | covered |
+| REQ-012.2 | C, J | T-012-P1; J (1.6): T-012-P10 | covered |
+| REQ-012.3 | C, J | T-012-P2; J (1.6): T-012-P10 | covered |
 | REQ-012.4 | C | T-012-N1 | covered |
-| REQ-012.5 | C | T-012-N2 | covered |
-| REQ-012.6 | C | T-012-P3, T-012-N4 | covered |
+| REQ-012.5 | C, J | T-012-N2; J (1.6): T-012-N11, T-012-N13 | covered |
+| REQ-012.6 | C, J | T-012-P3, T-012-N4; J (1.6): T-012-N11, T-012-N13 | covered |
 | REQ-012.7 | C | T-012-N3 | covered |
 | REQ-012.8 | C, J | C: T-012-P4; J: T-012-P5 | covered |
-| REQ-012.9 | C | T-012-P6 | covered |
-| REQ-012.10 | C | T-012-P6 | covered |
-| REQ-012.11 | C, J | C: T-012-P6; J: T-012-P7 | covered |
-| REQ-012.12 | C | T-012-P8 | covered |
-| REQ-012.13 | C | T-012-P9 | covered |
-| REQ-012.14 | C | T-012-N6 | covered |
+| REQ-012.9 | C, J | T-012-P6; J (1.6): T-012-P10 | covered |
+| REQ-012.10 | C, J | T-012-P6; J (1.6): T-012-P10 | covered |
+| REQ-012.11 | C, J | C: T-012-P6; J: T-012-P7; J (1.6): T-012-P10 | covered |
+| REQ-012.12 | C, J | T-012-P8; J (1.6): T-012-N11, T-012-N13 | covered |
+| REQ-012.13 | C, J | T-012-P9; J (1.6): T-012-N13 | covered |
+| REQ-012.14 | C, J | T-012-N6; J (1.6): T-012-N13 | covered |
 | REQ-012.15 | C | T-012-N7 | covered |
-| REQ-012.16 | I, C, J | I: T-012-N8; C: T-012-N9; J: T-012-N10 | covered |
+| REQ-012.16 | I, C, J | I: T-012-N8; C: T-012-N9; J: T-012-N10; J (1.6): T-012-N12 | covered |
 | REQ-013.1 | C | T-013-P1, T-013-N1 | covered |
 | REQ-013.2 | C | T-013-P2, T-013-N1 | covered |
 | REQ-013.3 | C | T-013-P3 | covered |
@@ -737,16 +795,16 @@ No test of revision 3 is retired and no ID changes; 20 tests are added (237 to 2
 | REQ-013.21 | C, B | C: T-013-N11; B: T-013-N12 | covered |
 | REQ-013.22 | C | T-013-N13, T-013-P20 | covered |
 | REQ-013.23 | C, J | C: T-013-P21, T-013-N14; J: T-013-P22 | covered |
-| REQ-013.24 | C | T-013-N15 | covered |
+| REQ-013.24 | C, J | T-013-N15; J (1.6): T-013-N16 | covered |
 | REQ-013.25 | C, J | C: T-013-P23; J: T-013-P24 | covered |
-| REQ-013.26 | C | T-013-P25 | covered |
+| REQ-013.26 | C, J | T-013-P25; J (1.6): T-013-N16 | covered |
 | REQ-014.1 | C | T-014-P1, T-014-N1 | covered |
 | REQ-014.2 | C | T-014-P2 | covered |
 | REQ-014.3 | C | T-014-P3 | covered |
-| REQ-014.4 | C | T-014-P4 | covered |
-| REQ-014.5 | B | T-014-P5 | covered |
-| REQ-014.6 | B | T-014-P6 (row buttons and the Add icon), T-014-P12 (the four state-demo controls) | covered |
-| REQ-014.7 | B | T-014-P8 | covered |
+| REQ-014.4 | C, J | T-014-P4; J (1.6): T-014-N2 | covered |
+| REQ-014.5 | B, J | T-014-P5; J (1.6): T-014-P13, T-014-N2 | covered |
+| REQ-014.6 | B, J | T-014-P6 (row buttons and the Add icon), T-014-P12 (the four state-demo controls); J (1.6): T-014-P13 | covered |
+| REQ-014.7 | B, J | T-014-P8; J (1.6): T-014-P13 | covered |
 | REQ-014.8 | C | T-014-P9 | covered |
 | REQ-014.9 | C | T-014-P10 | covered |
 | REQ-014.10 | C | T-014-P11 | covered |
@@ -784,7 +842,7 @@ No test of revision 3 is retired and no ID changes; 20 tests are added (237 to 2
 | REQ-017.15 | C, R2 | C: T-017-P1; R2: T-017-N9 | covered; review part cannot run |
 | REQ-017.16 | C, R2 | C: T-017-P1; R2: T-017-N9 | covered; review part cannot run |
 | REQ-017.17 | C | T-017-N1 | covered |
-| REQ-017.18 | C, B | C: T-017-P1; B: T-017-P2 | covered |
+| REQ-017.18 | C, B, J | C: T-017-P1; B: T-017-P2; J (1.6): T-017-P3 | covered |
 | REQ-017.19 | C, R2 | C: T-017-N10; R2: T-017-N9 | covered; review part cannot run |
 
 ### 5.2 Test to requirement
@@ -831,6 +889,7 @@ Under DD-24 the title of each test begins with its ID. The blueprint (section 8,
 | An Add made from the Show empty list view on the real stack (D-26) | T-013-P17, T-013-P19 |
 | A failed list fetch on the real stack: the modal, and Retry (D-25) | T-013-P22, T-013-P24 |
 | Restart persistence through Compose | T-016-P3, T-016-P4, T-016-N3 |
+| The journey pairs of revision 5 (1.6, 4.6): the rows, statuses and data as text; the borrower modal's Close and its members; a member's own Return, and her refusal on a stale loan; two simultaneous Borrows; Adds that are not carried out; who is offered Mark, Restore and Delete; the row loader, the wrong-state, gone and server-error rejections and Retry; a list fetch failing twice; the keyboard; the control inventory | T-002-P3, T-002-N4, T-004-N10, T-005-P2, T-006-P8, T-006-N8, T-007-N10, T-008-P3, T-009-N16, T-009-N17, T-009-N18, T-010-N10, T-011-N10, T-012-P10, T-012-N11, T-012-N12, T-012-N13, T-013-N16, T-014-P13, T-014-N2, T-017-P3 |
 
 ---
 
@@ -840,9 +899,9 @@ The rubric asks for at least one restraint test per surface. Each sentence asser
 
 | Surface | Rubric rule it asserts | Tests |
 |---|---|---|
-| Web page, controls | No control outside the places the PRD names, and no unnamed control anywhere | T-017-P1 (C), T-017-P2 (B), T-002-N1, T-003-N1 |
+| Web page, controls | No control outside the places the PRD names, and no unnamed control anywhere | T-017-P1 (C), T-017-P2 (B), T-017-P3 (J), T-002-N1, T-003-N1 |
 | Web page, text and messages | Nothing is shown that the PRD does not specify (messages, dates, history, details, success notes, trial labels) | T-017-N1, T-017-N2, T-017-N10, T-001-N1, T-002-N3, T-012-N1, T-012-N7 |
-| Web page, data as text | Text that comes from data is never treated as a control or executed | T-002-N2, T-017-P1 (feature-named items are data) |
+| Web page, data as text | Text that comes from data is never treated as a control or executed | T-002-N2, T-002-N4 (J: a name the real server keeps and hands back), T-017-P1 (feature-named items are data) |
 | Web page, other services | No integration with another service is offered | T-017-N5 |
 | Network from the page | No request to an origin the blueprint does not name, and no write request the PRD does not describe | T-017-N4 (J: origin and "nothing changed" by the steps that must change nothing); also T-013-N4, T-013-N5 (a demo changes nothing), T-004-N2, T-011-N3, T-012-N3 (Close and Cancel change nothing) |
 | Browser storage | Nothing is stored that the PRD does not describe | T-017-N3 |
@@ -945,7 +1004,7 @@ harness/web/node_modules/.bin/playwright test --config web/playwright.config.js
 # C10 the Compose stack from the frozen values file
 docker compose --env-file harness/e2e/eval.env up -d --build --wait --wait-timeout 300
 
-# C11 J: Chromium on the running stack. The production rows (T-016-P3, T-016-P4, T-016-N3) run last,
+# C11 J: Chromium on the running stack. The production rows (T-016-P3, T-016-P4, T-016-N3, and T-012-N13 of 1.6) run last,
 #     because they stop and recreate the stack with docker compose down and up from the repository root
 #     and the same --env-file. Output: e2e/reports/journey.xml, traces and one screenshot per step
 npm --prefix e2e ci
@@ -1016,7 +1075,7 @@ This plan adopts the blueprint's four-story split and its file ownership (bluepr
 | S1 Database, rules and seed | `api/pyproject.toml`, `api/requirements.txt` (S2 does not own it, so it lists the whole API stack: FastAPI 0.115, Uvicorn 0.32, SQLAlchemy 2.0, psycopg 3.2), `api/app/__init__.py`, `api/app/db.py`, `api/app/rules.py`. Frozen, gating: `harness/api/**`, `api/tests/conftest.py`, `api/tests/unit/**`, `api/tests/db/**` | none | 17 tests. T-001: N6; T-003: P6 N3; T-004: P6 N6; T-005: N4; T-006: P6 N2; T-007: N6; T-008: N4 N7; T-009: P7 N10; T-010: P8 N4; T-011: P6 N5 |
 | S2 API routes and start-up | `api/app/config.py`, `api/app/routes.py`, `api/app/main.py`. Frozen, gating: `api/tests/api/**` | S1 | 55 tests. T-001: P4 N3 N4 N7; T-003: P4 P7 N2; T-004: P5 P10 N5 N7; T-005: P1 N3 N6; T-006: P4 P5 N4 N7; T-007: N1 N2 N3 N4 N5 N9; T-008: P1 N1 N2 N3 N6 N8 N9 N10; T-009: P4 P8 N5 N7 N9 N12; T-010: P5 P6 P11 N6 N7 N8 N9; T-011: P5 N4 N7 N8; T-012: N8; T-016: P1 P2 N1 N2; T-017: N7 |
 | S3 The whole web client | `web/package.json`, `web/package-lock.json`, `web/index.html`, `web/vite.config.js`, everything under `web/src/`. Frozen, gating: `harness/web/**`, `web/tests/component/**`, `web/tests/browser/**`, `web/playwright.config.js` | none for code (it builds against blueprint section 12 and mocks `fetch`) | 151 tests. T-001: P1 P2 P3 P6 P7 N1 N2 N5; T-002: P1 N1 N2 N3; T-003: P1 P2 P3 P8 N1 N4; T-004: P1 P2 P3 P4 P8 P9 N1 N2 N3 N8; T-005: N1 N2; T-006: P1 P2 P3 N1 N6; T-007: P1 P2 P3 N8; T-008: P2; T-009: P1 P2 P3 P6 P9 P10 P11 P12 N1 N2 N3 N4 N8 N11 N13 N14 N15; T-010: P1 P2 P3 P4 P9 P10 N1 N2 N3 N5; T-011: P1 P2 P3 P4 N1 N2 N3; T-012: P1 P2 P3 P4 P6 P8 P9 N1 N2 N3 N4 N6 N7 N9; T-013: P1 P2 P3 P5 P6 P7 P8 P9 P10 P11 P12 P13 P15 P16 P18 P20 P21 P23 P25 N1 N2 N3 N4 N6 N7 N8 N9 N10 N11 N12 N13 N14 N15; T-014: P1 P2 P3 P4 P5 P6 P8 P9 P10 P11 P12 N1; T-015: P1 P3 P4 P8 P9 P10 P11 P12 P13 P14 P15 N1; T-017: P1 P2 N1 N2 N5 N10 |
-| S4 Compose and the journey | `docker-compose.yml`, `.env.example`, `.gitignore`, `api/Dockerfile`, `api/.dockerignore`, `web/Dockerfile`, `web/nginx.conf`, `web/.dockerignore`, `evidence/review/**` (the directory only: the two pre-review reports are written by the pre-reviewing agent and the two records by the user, never by the S4 builder; blueprint 4.1.3 and 9.1). Frozen, gating: `harness/e2e/**`, `e2e/**` | S2, S3 (S1 through S2) | 34 tests. T-001: P5 N8; T-003: P5 N5; T-004: P7 N9; T-005: N5 N7; T-006: P7; T-007: P4; T-008: N11 N12; T-009: P5; T-010: P7; T-011: P7 N9; T-012: P5 P7 N10; T-013: P14 P17 P19 P22 P24 N5; T-015: P5 P6 P7; T-016: P3 P4 N3; T-017: N3 N4 N9 |
+| S4 Compose and the journey | `docker-compose.yml`, `.env.example`, `.gitignore`, `api/Dockerfile`, `api/.dockerignore`, `web/Dockerfile`, `web/nginx.conf`, `web/.dockerignore`, `evidence/review/**` (the directory only: the two pre-review reports are written by the pre-reviewing agent and the two records by the user, never by the S4 builder; blueprint 4.1.3 and 9.1). Frozen, gating: `harness/e2e/**`, `e2e/**` | S2, S3 (S1 through S2) | 55 tests. T-001: P5 N8; T-002: P3 N4; T-003: P5 N5; T-004: P7 N9 N10; T-005: P2 N5 N7; T-006: P7 P8 N8; T-007: P4 N10; T-008: P3 N11 N12; T-009: P5 N16 N17 N18; T-010: P7 N10; T-011: P7 N9 N10; T-012: P5 P7 P10 N10 N11 N12 N13; T-013: P14 P17 P19 P22 P24 N5 N16; T-014: P13 N2; T-015: P5 P6 P7; T-016: P3 P4 N3; T-017: P3 N3 N4 N9. The 21 added by revision 5 (1.6) were written after S4 merged and pass against it |
 
 Scope is disjoint: the four sets above share no file, and the shared folders `api/`, `web/` and `harness/` are split file by file or by subfolder (`harness/api` S1, `harness/web` S3, `harness/e2e` S4). Generated report folders (`api/reports/`, `web/reports/`, `e2e/reports/`) and the virtual environment `.eval-venv/` are git-ignored output owned by nobody. S3 owns every path under `web/` except the three files named under S4. The four review rows are S4's to turn green, but S4's builder cannot turn them green: they pass only on the user's record, which follows an agent pre-review that the S4 builder also does not run (1.5).
 
@@ -1114,42 +1173,42 @@ Each criterion below cannot be checked exactly as the PRD states it. The PRD is 
 
 Section 3 holds every test. Nothing is blocked. The counts below were checked against the file with a search that counts the table rows of section 3 by letter, by kind, by story and by state.
 
-**Overall:** 257 tests: 134 positive and 123 negative. By kind: unit 136, integration 55, e2e 46, restraint 13, production 3, review 4. Expected before the build: 253 fail, 4 cannot run (the review rows T-015-P5, T-015-P6, T-015-P7 and T-017-N9), 0 pass. Nineteen tests carry no labelled criterion (5.2); 238 do. Revision 3 held 237 tests; this revision keeps all 237 IDs, retires none and adds 20 (4.5). All 182 criteria are covered (5.1); none is in the gaps.
+**Overall:** 278 tests: 141 positive and 137 negative. By kind: unit 136, integration 55, e2e 64, restraint 15, production 4, review 4. Expected before the build: 253 fail, 4 cannot run (the review rows T-015-P5, T-015-P6, T-015-P7 and T-017-N9), 0 pass; the 21 journey rows of revision 5 were written after the build and pass against it (1.6), so the state column holds 21 `passes`. Nineteen tests carry no labelled criterion (5.2); 259 do. Revision 3 held 237 tests; revision 4 kept all 237 IDs, retired none and added 20 (4.5); revision 5 retires none and adds 21 journey rows (4.6). All 182 criteria are covered (5.1); none is in the gaps.
 
 Per requirement:
 
 | Requirement | P | N | Total | unit | integration | e2e | restraint | production | review | fails | cannot run | passes |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | REQ-001 | 7 | 8 | 15 | 8 | 4 | 2 | 1 | 0 | 0 | 15 | 0 | 0 |
-| REQ-002 | 1 | 3 | 4 | 1 | 0 | 0 | 3 | 0 | 0 | 4 | 0 | 0 |
+| REQ-002 | 2 | 4 | 6 | 1 | 0 | 1 | 4 | 0 | 0 | 4 | 0 | 2 |
 | REQ-003 | 8 | 5 | 13 | 8 | 3 | 2 | 0 | 0 | 0 | 13 | 0 | 0 |
-| REQ-004 | 10 | 8 | 18 | 12 | 4 | 2 | 0 | 0 | 0 | 18 | 0 | 0 |
-| REQ-005 | 1 | 7 | 8 | 3 | 3 | 2 | 0 | 0 | 0 | 8 | 0 | 0 |
-| REQ-006 | 7 | 5 | 12 | 7 | 4 | 1 | 0 | 0 | 0 | 12 | 0 | 0 |
-| REQ-007 | 4 | 8 | 12 | 5 | 6 | 1 | 0 | 0 | 0 | 12 | 0 | 0 |
-| REQ-008 | 2 | 11 | 13 | 2 | 9 | 2 | 0 | 0 | 0 | 13 | 0 | 0 |
-| REQ-009 | 12 | 14 | 26 | 17 | 6 | 3 | 0 | 0 | 0 | 26 | 0 | 0 |
-| REQ-010 | 11 | 9 | 20 | 12 | 7 | 1 | 0 | 0 | 0 | 20 | 0 | 0 |
-| REQ-011 | 7 | 8 | 15 | 9 | 4 | 2 | 0 | 0 | 0 | 15 | 0 | 0 |
-| REQ-012 | 9 | 9 | 18 | 14 | 1 | 3 | 0 | 0 | 0 | 18 | 0 | 0 |
-| REQ-013 | 24 | 15 | 39 | 30 | 0 | 9 | 0 | 0 | 0 | 39 | 0 | 0 |
-| REQ-014 | 11 | 1 | 12 | 8 | 0 | 4 | 0 | 0 | 0 | 12 | 0 | 0 |
+| REQ-004 | 10 | 9 | 19 | 12 | 4 | 3 | 0 | 0 | 0 | 18 | 0 | 1 |
+| REQ-005 | 2 | 7 | 9 | 3 | 3 | 3 | 0 | 0 | 0 | 8 | 0 | 1 |
+| REQ-006 | 8 | 6 | 14 | 7 | 4 | 3 | 0 | 0 | 0 | 12 | 0 | 2 |
+| REQ-007 | 4 | 9 | 13 | 5 | 6 | 2 | 0 | 0 | 0 | 12 | 0 | 1 |
+| REQ-008 | 3 | 11 | 14 | 2 | 9 | 3 | 0 | 0 | 0 | 13 | 0 | 1 |
+| REQ-009 | 12 | 17 | 29 | 17 | 6 | 6 | 0 | 0 | 0 | 26 | 0 | 3 |
+| REQ-010 | 11 | 10 | 21 | 12 | 7 | 2 | 0 | 0 | 0 | 20 | 0 | 1 |
+| REQ-011 | 7 | 9 | 16 | 9 | 4 | 3 | 0 | 0 | 0 | 15 | 0 | 1 |
+| REQ-012 | 10 | 12 | 22 | 14 | 1 | 6 | 0 | 1 | 0 | 18 | 0 | 4 |
+| REQ-013 | 24 | 16 | 40 | 30 | 0 | 10 | 0 | 0 | 0 | 39 | 0 | 1 |
+| REQ-014 | 12 | 2 | 14 | 8 | 0 | 6 | 0 | 0 | 0 | 12 | 0 | 2 |
 | REQ-015 | 14 | 1 | 15 | 0 | 0 | 12 | 0 | 0 | 3 | 12 | 3 | 0 |
 | REQ-016 | 4 | 3 | 7 | 0 | 4 | 0 | 0 | 3 | 0 | 7 | 0 | 0 |
-| REQ-017 | 2 | 8 | 10 | 0 | 0 | 0 | 9 | 0 | 1 | 9 | 1 | 0 |
-| **Total** | **134** | **123** | **257** | **136** | **55** | **46** | **13** | **3** | **4** | **253** | **4** | **0** |
+| REQ-017 | 3 | 8 | 11 | 0 | 0 | 0 | 10 | 0 | 1 | 9 | 1 | 1 |
+| **Total** | **141** | **137** | **278** | **136** | **55** | **64** | **15** | **4** | **4** | **253** | **4** | **21** |
 
 Per owner story:
 
-| Owner story | Tests | unit | integration | e2e | restraint | production | review | fails | cannot run |
-|---|---|---|---|---|---|---|---|---|---|
-| S1 | 17 | 16 | 1 | 0 | 0 | 0 | 0 | 17 | 0 |
-| S2 | 55 | 0 | 54 | 0 | 1 | 0 | 0 | 55 | 0 |
-| S3 | 151 | 120 | 0 | 21 | 10 | 0 | 0 | 151 | 0 |
-| S4 | 34 | 0 | 0 | 25 | 2 | 3 | 4 | 30 | 4 |
-| **Total** | **257** | **136** | **55** | **46** | **13** | **3** | **4** | **253** | **4** |
+| Owner story | Tests | unit | integration | e2e | restraint | production | review | fails | cannot run | passes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| S1 | 17 | 16 | 1 | 0 | 0 | 0 | 0 | 17 | 0 | 0 |
+| S2 | 55 | 0 | 54 | 0 | 1 | 0 | 0 | 55 | 0 | 0 |
+| S3 | 151 | 120 | 0 | 21 | 10 | 0 | 0 | 151 | 0 | 0 |
+| S4 | 55 | 0 | 0 | 43 | 4 | 4 | 4 | 30 | 4 | 21 |
+| **Total** | **278** | **136** | **55** | **64** | **15** | **4** | **4** | **253** | **4** | **21** |
 
-Cross-check: the per-requirement total, the per-story total and the sum of the kinds each equal 257; the fails, cannot-run and passes columns sum to 257; the P and N columns sum to 257.
+Cross-check: the per-requirement total, the per-story total and the sum of the kinds each equal 278; the fails, cannot-run and passes columns sum to 278; the P and N columns sum to 278.
 
 ---
 
@@ -1159,12 +1218,12 @@ This is the drafter's own check against the rubric's checker list, not the check
 
 | Checker item | Result |
 |---|---|
-| Requirements missing a P or an N test | none; every requirement has a runnable P and a runnable N (REQ-015 and REQ-017 included) |
-| Tests with no or an unknown requirement | none; 257 of 257 IDs carry a PRD requirement number |
+| Requirements missing a P or an N test | none; every requirement has a runnable P and a runnable N (REQ-015 and REQ-017 included), and every requirement but REQ-015, the look list, has a P and an N journey row (1.6), which `eval/check_plan.py` checks |
+| Tests with no or an unknown requirement | none; 278 of 278 IDs carry a PRD requirement number |
 | Criteria absent from both the tests and the gaps | none; 182 of 182 in 5.1, the nine of the third round (REQ-013.18 to REQ-013.26) included |
 | Verification-register rows with no test or named review | none; every one of the 182 criteria has a test for each mechanism the register names (5.1), the register's browser rows for the placement of the inline validation message included (T-009-N14, T-009-N15, T-013-N10, T-013-N12), and the concurrency table is covered (5.3) |
 | Tests with no owner story | none |
-| Tests with no state-before-the-build value | none; 253 `fails`, 4 `cannot run`, each cell written out |
+| Tests with no state-before-the-build value | none; 253 `fails`, 4 `cannot run` and, for the 21 journey rows written after the build (1.6), 21 `passes`, each cell written out |
 | Overlapping story scope | none (8.1), the `harness/` folder included |
 | Tests depending on a later story's files | none (8.2) |
 | Gaps section and untestable-as-written section present | yes (sections 9 and 10) |
@@ -1176,7 +1235,7 @@ This is the drafter's own check against the rubric's checker list, not the check
 - **What a test may assert.** Satisfied in every Then, with four places that sit close to the line and are named so a reviewer can judge them. (1) T-017-N4 asserts that the page's requests go only to the stack's own address, because the rubric's restraint rule asks for "no network request to an origin the blueprint does not name"; it asserts nothing about which route or whether a given call was made, and its write-request half is asserted as "nothing changed". (2) The U rows state the class of decision the rules layer returned, "refuses" or "rejects" in the PRD's section 4 sense, which blueprint 4.1.1 now allows for a rules-level row; none names the type that carries the class, and none states a code. (3) "Confirmed" in an integration row is recognised by the caller being given the changed item; the plan states the outcome, not the code, so the integration rows cannot tell a refusal from a rejection, which blueprint 4.1.1 now requires of them, and that difference is asserted only in the C, B and J rows. (4) T-013-N15 and T-013-P23 observe a repeated list fetch only through its stated consequence, the list indicator, with a second request held; neither asserts whether a call was made, and neither asserts anything GAP-1 leaves open (9.3).
 - **Freeze readiness.** Satisfied for every behaviour, name, locator and string the blueprint pins. Not fully satisfiable from the inputs: the seven items of section 2 (the place of the `harness/` folder, patch versions and hashes, the mechanics of one React copy, file names, the build environment, the wording of the blueprint's REQ-003.6 journey, and OP-3, how the agent pre-review sessions are started, handed the conversation trail, and whether they can drive the running build).
 - **Commands.** Satisfied with assumptions. They were written but not run. The version lines of blueprint 12.10 were chosen without checking registries (OP-2) and the build environment is not stated (OP-1).
-- **State before the build.** Satisfied for every row. No row is `passes:`, and `cannot run:` is used for the four review rows only. The baseline of the database and integration reports is a case per row erroring at setup, not a collection error (1.2).
+- **State before the build.** Satisfied for every row. No row frozen before the build is `passes:`; the 21 journey rows of revision 5 were written after it and say what they did against it (1.6). `cannot run:` is used for the four review rows only. The baseline of the database and integration reports is a case per row erroring at setup, not a collection error (1.2).
 - **Stories.** Satisfied. `harness/` now has owners (8.1). The review rows are owned by S4 and need S2 and S3.
 - **Rows beyond the register's mechanism.** Seven API rows check, at the data level, a criterion whose register mechanism is C and J: T-003-P4, T-004-P5, T-005-P1, T-006-P4, T-006-P5, T-009-P4 and T-011-P5. Two rows exist because the rubric asks for a restraint test per surface: T-017-N3 and T-017-N4. Nine rows exist for blueprint section 8 pairs and carry `CONC` and the pair, with no label (T-006-N7, T-008-N8, T-008-N10, T-009-N12, T-010-N6 to T-010-N9 and T-011-N8). Four more rows exist for the register's browser mechanism of the placement and for the keyboard split (T-009-N14, T-009-N15, T-013-N10 and T-013-N12 carry the register's B rows; T-014-P12 is the split of T-014-P6). All are supporting rows or register rows; no criterion depends on one of the pair rows alone.
 - **Restraint tests judge structure.** Satisfied, with one exception that is named: T-017-N10 and T-001-N1 search text for words, because REQ-017.19 and REQ-001.3 are about what the text says.
@@ -1193,7 +1252,7 @@ No question is open in the PRD, so no row waits on one. The blueprint's GAP-1 is
 
 **D-21, the state demos** (client-only; never calling the API or changing stored data; shown only after a user is picked; Show loading holds the list indicator for 900ms; Show empty list holds until the user changes or Show loading is activated; Retry in the demo failure modal only closes it). REQ-013.11 to REQ-013.17 are T-013-N3, T-013-N4, T-013-N5, T-013-P12 to T-013-P14, T-013-N6, T-013-P15, T-013-N7 and T-013-N8. The 900ms rows wait for the indicator to appear and disappear and never sleep.
 
-**D-22, the three strings.** "Choose a user" is asserted in T-001-P6, the entry format in T-001-P7, "Name must be 100 characters or fewer." in T-009-P11.
+**D-22, the three strings.** "Choose a user" is asserted in T-001-P6, the entry format in T-001-P7, "Name must be 100 characters or fewer." in T-009-P11 and, on the real stack, T-009-N17.
 
 **D-23, the access log carries the acting user id.** The log is operational and is not a record, so no row reads it. T-004-N5 and T-006-N4 read the data store and the answers only, and assert that nothing in them names the actor.
 

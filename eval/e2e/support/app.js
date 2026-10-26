@@ -173,3 +173,119 @@ export async function textsOutsideTheTopBar(page) {
     return found;
   });
 }
+
+export function addValidation(page) {
+  return page.getByTestId('add-validation');
+}
+
+/**
+ * The four checks of the inline message's placement (eval plan 1.1, blueprint
+ * 12.8.1), all four, because a J row runs in Chromium, which lays the page out.
+ * Returns the facts and leaves the asserting to the row, so a failure names the
+ * check that failed.
+ */
+export function placementOfTheMessage(page) {
+  return page.evaluate(() => {
+    const card = globalThis.document.querySelector('[data-testid="add-card"]');
+    const field = globalThis.document.querySelector('[data-testid="add-input"]');
+    const message = globalThis.document.querySelector('[data-testid="add-validation"]');
+    if (card === null || field === null || message === null) {
+      return { found: false };
+    }
+    const cardBox = card.getBoundingClientRect();
+    const fieldBox = field.getBoundingClientRect();
+    const box = message.getBoundingClientRect();
+    return {
+      found: true,
+      // (1) inside the Add card in the document.
+      insideTheCard: card.contains(message),
+      // (2) after the Add field in document order.
+      afterTheField: (field.compareDocumentPosition(message) & 4) === 4,
+      // (3) laid out below the field: its top not above the field's lower edge, and
+      // the two boxes not overlapping.
+      belowTheField:
+        box.top >= fieldBox.bottom - 0.5 &&
+        !(
+          box.left < fieldBox.right &&
+          box.right > fieldBox.left &&
+          box.top < fieldBox.bottom &&
+          box.bottom > fieldBox.top
+        ),
+      // (4) its whole box within the Add card's box.
+      withinTheCard:
+        box.left >= cardBox.left - 0.5 &&
+        box.right <= cardBox.right + 0.5 &&
+        box.top >= cardBox.top - 0.5 &&
+        box.bottom <= cardBox.bottom + 0.5,
+    };
+  });
+}
+
+/**
+ * What has the keyboard focus, as a person would name it: the control's
+ * data-testid and, for a row's control, the id of the item its row shows.
+ */
+export function focused(page) {
+  return page.evaluate(() => {
+    const active = globalThis.document.activeElement;
+    if (active === null || active === globalThis.document.body) {
+      return { control: null, itemId: null };
+    }
+    const row = active.closest('[data-testid="row"]');
+    return {
+      control: active.getAttribute('data-testid') ?? active.tagName.toLowerCase(),
+      itemId: row === null ? null : Number(row.getAttribute('data-item-id')),
+    };
+  });
+}
+
+/**
+ * Move the focus with the keyboard alone until it is on `control` (and, when
+ * `itemId` is given, on that item's row). `key` is 'Tab' or 'Shift+Tab'. Returns
+ * whether it got there and where the focus went on the way, so a failure says
+ * what the keyboard could reach instead.
+ *
+ * The stack's list is long (every earlier row's items are still in it) and the
+ * item a row just created is the last row, so a row that wants a row's control
+ * goes backwards with Shift+Tab, which is still the keyboard alone. Where the
+ * browser starts the walk after the focus is taken away is its own business, so
+ * the limit is long enough to go round the whole page rather than relying on it.
+ */
+export async function keyboardTo(page, { control, itemId = null, key = 'Tab', limit = 400 }) {
+  const passed = [];
+  for (let step = 0; step < limit; step += 1) {
+    await page.keyboard.press(key);
+    const now = await focused(page);
+    passed.push(now.itemId === null ? now.control : `${now.control}@${now.itemId}`);
+    if (now.control === control && (itemId === null || now.itemId === itemId)) {
+      return { reached: true, passed };
+    }
+  }
+  return { reached: false, passed };
+}
+
+/** Take the focus off everything, so the next Shift+Tab starts from the end of the page. */
+export async function focusNothing(page) {
+  await page.evaluate(() => {
+    const active = globalThis.document.activeElement;
+    if (active !== null && typeof active.blur === 'function') {
+      active.blur();
+    }
+  });
+}
+
+/**
+ * Every control on the page, as REQ-017.18 counts them (blueprint 12.8.3): every
+ * button, input, select, a and textarea, and every element with a tabindex or a
+ * button role. Each is named by its data-testid, or by its tag when it has none,
+ * which is itself a finding.
+ */
+export function controlsOnThePage(page) {
+  return page.evaluate(() =>
+    Array.from(
+      globalThis.document.querySelectorAll(
+        'button, input, select, a, textarea, [tabindex], [role="button"]',
+      ),
+    ).map((element) => element.getAttribute('data-testid') ?? `<${element.tagName.toLowerCase()}>`),
+  );
+}

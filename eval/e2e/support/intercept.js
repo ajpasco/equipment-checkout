@@ -142,3 +142,51 @@ export async function failNextRequest(page, matches) {
     await route.abort('failed');
   });
 }
+
+/**
+ * Hold the next matching request on its way to the real server, until the row
+ * lets it go or makes it fail.
+ *
+ * This is the stack's form of the fake server's "held" answer (eval plan 1.3):
+ * the request is not changed, only delayed, so when it is let go the answer the
+ * page receives is the real server's. A row uses it to see what the person is
+ * shown while an action is in progress (the loaders of REQ-012.1, REQ-012.9 and
+ * REQ-009.13), which on a fast local stack would otherwise be over before
+ * anything could look.
+ *
+ * Returns `held`, a promise that settles once the request has been caught, so a
+ * row never asserts "in progress" before the request exists; `release()`, which
+ * sends it on unchanged; `fail()`, which makes it never reach the server; and
+ * `remove()`, which takes the interception away. Later requests that match pass
+ * through untouched.
+ */
+export async function holdNextRequest(page, matches) {
+  let caught;
+  const held = new Promise((resolve) => {
+    caught = resolve;
+  });
+  let decide;
+  const decision = new Promise((resolve) => {
+    decide = resolve;
+  });
+  let taken = false;
+  const remove = await install(page, matches, async (route) => {
+    if (taken) {
+      await route.fallback();
+      return;
+    }
+    taken = true;
+    caught();
+    if ((await decision) === 'fail') {
+      await route.abort('failed');
+    } else {
+      await route.fallback();
+    }
+  });
+  return {
+    held,
+    release: () => decide('release'),
+    fail: () => decide('fail'),
+    remove,
+  };
+}

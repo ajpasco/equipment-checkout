@@ -14,6 +14,13 @@ A row the founder has deferred (eval/deferred.txt, read by eval/check_rows.py) s
 list, so it counts here as a row with a test. Each deferred id must be such a row; a line naming
 anything else is refused.
 
+The journey pair rule (eval plan 1.6): every requirement that the plan's rows or the PRD's headings
+name, and that is not on the plan's look list, has at least one positive and one negative row in
+eval/e2e/rows.txt, the rows that drive the real application end to end. The look list is the one
+line of the plan that reads `Look list: REQ-nnn, REQ-nnn.`, or `Look list: none.` (a requirement whose criteria are all about how the page looks, which
+the browser rows measure on the same build the stack serves); a plan without that line fails. A
+deferred journey row still counts towards its pair, as it counts as a row here.
+
 This exists because 146 rows (the component, unit and database rows) were once left out of the exam
 by default and nothing said so. Standard library only, run with -I, so nothing in the tree under
 test can change how it reads.
@@ -29,6 +36,11 @@ ROOT = os.path.dirname(HERE)
 PLAN = os.path.join(ROOT, "docs", "eval-plan.md")
 DEFERRED = os.path.join(HERE, "deferred.txt")
 ROW = re.compile(r"T-\d{3}-[PN]\d+")
+JOURNEY = os.path.join(HERE, "e2e", "rows.txt")
+JOURNEY_KINDS = {"e2e", "production", "restraint"}
+LOOK_LIST = re.compile(r"^Look list: (none|REQ-\d{3}(?:, REQ-\d{3})*)\.$", re.MULTILINE)
+PRD = os.path.join(ROOT, "docs", "PRD.md")
+PRD_REQUIREMENT = re.compile(r"^### (REQ-\d{3}):", re.MULTILINE)
 
 
 def plan_rows(path):
@@ -52,6 +64,41 @@ def plan_rows(path):
         # only escaped, so the kind is counted from the right.
         rows[cells[0]] = cells[-3]
     return rows
+
+
+def look_list(path):
+    """The requirements on the plan's look list, or None when the plan has no such line."""
+    with open(path, encoding="utf-8") as handle:
+        found = LOOK_LIST.findall(handle.read())
+    if len(found) != 1:
+        return None
+    return set() if found[0] == "none" else set(found[0].split(", "))
+
+
+def prd_requirements(path):
+    """The requirements the PRD numbers (its `### REQ-nnn:` headings); none when it is absent."""
+    try:
+        with open(path, encoding="utf-8") as handle:
+            return set(PRD_REQUIREMENT.findall(handle.read()))
+    except FileNotFoundError:
+        return set()
+
+
+def journey_pairs(plan, journey_ids, look):
+    """The requirements of the plan or the PRD, not on the look list, that lack a P or an N journey
+    row. The PRD is read too, so that a requirement with no row at all is not missed."""
+    requirements = sorted({f"REQ-{row[2:5]}" for row in plan} | prd_requirements(PRD))
+    # Only a row of a journey kind counts: a unit or component row listed here would not drive the
+    # real application, whatever list it is on.
+    held = {(f"REQ-{row[2:5]}", row[6]) for row in journey_ids if plan.get(row) in JOURNEY_KINDS}
+    missing = []
+    for requirement in requirements:
+        if requirement in look:
+            continue
+        lacking = [sense for sense in ("P", "N") if (requirement, sense) not in held]
+        if lacking:
+            missing.append(f"{requirement} has no {' and no '.join(lacking)} journey row")
+    return missing
 
 
 def listed_rows(path):
@@ -104,6 +151,22 @@ def main():
         if row not in where or row not in automated:
             problems.append(f"{row} in eval/deferred.txt is not an automated row on a group's list")
 
+    look = look_list(PLAN)
+    if not prd_requirements(PRD):
+        problems.append(f"no requirement can be read from {os.path.relpath(PRD, ROOT)}, so the journey pair "
+                        "rule cannot see a requirement that has no row")
+    if look is None:
+        problems.append("the plan has no single line 'Look list: REQ-nnn, ...' (eval plan 1.6), "
+                        "so the journey pair rule cannot be read")
+    else:
+        named = {f"REQ-{row[2:5]}" for row in plan} | prd_requirements(PRD)
+        unknown_look = sorted(r for r in look if r not in named)
+        for requirement in unknown_look:
+            problems.append(f"{requirement} is on the look list but neither the plan nor the PRD names it")
+        journey = listed_rows(JOURNEY) if os.path.isfile(JOURNEY) else []
+        for gap in journey_pairs(plan, journey, look):
+            problems.append(f"journey pair rule: {gap} in eval/e2e/rows.txt and is not on the look list")
+
     counts = ", ".join(
         f"{os.path.relpath(path, ROOT)} {len(listed_rows(path))}" for path in lists
     )
@@ -115,7 +178,8 @@ def main():
         return 1
     review_count = len(plan) - len(automated)
     print(f"[plan] pass, all {len(automated)} automated rows of the plan are each in exactly one group "
-          f"({counts}); the {review_count} review rows are a person's")
+          f"({counts}); the {review_count} review rows are a person's; every requirement but the look "
+          f"list ({', '.join(sorted(look)) or 'none'}) has a positive and a negative journey row")
     return 0
 
 

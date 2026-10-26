@@ -335,11 +335,11 @@ closes the row. The report is an input to it and is never that evidence.
 
 | Criterion | Mechanism | Evidence it produces |
 |---|---|---|
-| REQ-002.1 every row shows the name | C (S3) | `component.xml`, case REQ-002.1 |
-| REQ-002.2 exactly one status per row | C (S3): `row-status` appears once per row with one of the three texts | `component.xml`, case REQ-002.2 |
-| REQ-002.3 On loan row names the borrower | C (S3) | `component.xml`, case REQ-002.3 |
-| REQ-002.4 no Details button or screen | C (S3): the control inventory of REQ-017.18 holds and no row is a link or opens a view | `component.xml`, case REQ-002.4 |
-| REQ-002.5 no green "Borrowed" header | C (S3): no element reading "Borrowed" in any state | `component.xml`, case REQ-002.5 |
+| REQ-002.1 every row shows the name | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-002.1; `journey.xml`, case REQ-002.1 |
+| REQ-002.2 exactly one status per row | C (S3): `row-status` appears once per row with one of the three texts; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-002.2; `journey.xml`, case REQ-002.2 |
+| REQ-002.3 On loan row names the borrower | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-002.3; `journey.xml`, case REQ-002.3 |
+| REQ-002.4 no Details button or screen | C (S3): the control inventory of REQ-017.18 holds and no row is a link or opens a view; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-002.4; `journey.xml`, case REQ-002.4 |
+| REQ-002.5 no green "Borrowed" header | C (S3): no element reading "Borrowed" in any state; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-002.5; `journey.xml`, case REQ-002.5 |
 
 **REQ-003 Member borrows for themselves**
 
@@ -361,7 +361,7 @@ closes the row. The report is an input to it and is never that evidence.
 | REQ-004.1 borrower modal opens before any request | C (S3): the mocked server has received no request for the Borrow when the modal opens | `component.xml`, case REQ-004.1 |
 | REQ-004.2 modal lists members only | C (S3): exactly `member-button-2` and `member-button-3` | `component.xml`, case REQ-004.2 |
 | REQ-004.3 admin never listed | C (S3): no `member-button-1` | `component.xml`, case REQ-004.3 |
-| REQ-004.4 Close sends nothing, changes nothing | C (S3) | `component.xml`, case REQ-004.4 |
+| REQ-004.4 Close sends nothing, changes nothing | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-004.4; `journey.xml`, case REQ-004.4 |
 | REQ-004.5 choosing a member starts the borrow, row loader | C (S3) | `component.xml`, case REQ-004.5 |
 | REQ-004.6 reads "On loan – <chosen member>" once confirmed | C (S3); J (S4) | `component.xml` and `journey.xml`, case REQ-004.6 |
 | REQ-004.7 member who holds items is listed as any other | C (S3) | `component.xml`, case REQ-004.7 |
@@ -375,8 +375,8 @@ closes the row. The report is an input to it and is never that evidence.
 
 | Criterion | Mechanism | Evidence it produces |
 |---|---|---|
-| REQ-005.1 modal never offers the admin | C (S3), same observation as REQ-004.3 | `component.xml`, case REQ-005.1 |
-| REQ-005.2 no row ever reads "On loan – Ada Admin" | C (S3) after every admin action against mocks; J (S4) scans every step of the journey | `component.xml` and `journey.xml`, case REQ-005.2 |
+| REQ-005.1 modal never offers the admin | C (S3), same observation as REQ-004.3; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-005.1; `journey.xml`, case REQ-005.1 |
+| REQ-005.2 no row ever reads "On loan – Ada Admin" | C (S3) after every admin action against mocks; J (S4) scans every step of the journey; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `journey.xml`, case REQ-005.2 |
 | REQ-005.3 a Borrow naming an admin does not happen, unchanged | U (S1): the borrower decision rejects an admin's request that names an admin; I (S2): an admin's Borrow that names the admin is not carried out, item unchanged on read-back. A member's Borrow that names the admin is not verified in this row: the PRD covers it under REQ-003.6, as a refusal (the notes under REQ-003 and REQ-005), and the REQ-003.6 row verifies it, so it is verified once | `unit.xml` and `integration.xml`, case REQ-005.3 |
 | REQ-005.4 an admin naming an admin: rejected, unchanged, failure modal | U (S1): the borrower decision rejects an admin's request that names an admin; I (S2): an admin naming the admin is not carried out, item unchanged (the API failure modal that a person sees is asserted in J, next); J (S4): the body of the request the page sends after Ada chooses Mia is rewritten to name Ada: the API failure modal appears and the item is unchanged | `unit.xml`, `integration.xml` and `journey.xml`, case REQ-005.4 |
 
@@ -384,11 +384,11 @@ closes the row. The report is an input to it and is never that evidence.
 
 | Criterion | Mechanism | Evidence it produces |
 |---|---|---|
-| REQ-006.1 member sees Return on own loans | C (S3) | `component.xml`, case REQ-006.1 |
+| REQ-006.1 member sees Return on own loans | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-006.1; `journey.xml`, case REQ-006.1 |
 | REQ-006.2 admin sees Return on every On loan row | C (S3), including a loan set by the admin | `component.xml`, case REQ-006.2 |
-| REQ-006.3 other members see no action | C (S3): that row has no button | `component.xml`, case REQ-006.3 |
+| REQ-006.3 other members see no action | C (S3): that row has no button; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-006.3; `journey.xml`, case REQ-006.3 |
 | REQ-006.4 row loader until confirmed | C (S3) | `component.xml`, case REQ-006.4 |
-| REQ-006.5 reads Available once confirmed | C (S3); J (S4) | `component.xml` and `journey.xml`, case REQ-006.5 |
+| REQ-006.5 reads Available once confirmed | C (S3); J (S4); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `journey.xml`, case REQ-006.5 |
 | REQ-006.6 nothing shows who returned it | C (S3): after an admin's return, no text, `title`, `aria-label` or modal names the admin; J (S4) | `component.xml` and `journey.xml`, case REQ-006.6 |
 | REQ-006.7 no record names who returned it | I (S2): the attribution check NA of section 4.1.2 (return case): nothing the application keeps or can show differs between a loan the admin returned and the same loan the borrower returned. The operational log is outside the check | `integration.xml`, case REQ-006.7 |
 
@@ -396,27 +396,27 @@ closes the row. The report is an input to it and is never that evidence.
 
 | Criterion | Mechanism | Evidence it produces |
 |---|---|---|
-| REQ-007.1 member's forced return of another's loan: refused, still on loan | U (S1): the return decision refuses a member who is not the borrower; I (S2): not carried out, the item still On loan to its borrower on read-back. The modal is REQ-007.6 | `unit.xml` and `integration.xml`, case REQ-007.1 |
+| REQ-007.1 member's forced return of another's loan: refused, still on loan | U (S1): the return decision refuses a member who is not the borrower; I (S2): not carried out, the item still On loan to its borrower on read-back. The modal is REQ-007.6; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `unit.xml` and `integration.xml`, case REQ-007.1; `journey.xml`, case REQ-007.1 |
 | REQ-007.2 member's forced delete: refused, item remains | U (S1): the delete decision as a member; I (S2): not carried out, the item still listed on read-back. The modal is REQ-007.6 | `unit.xml` and `integration.xml`, case REQ-007.2 |
 | REQ-007.3 member's forced add: refused, no item created | U (S1); I (S2): not carried out, the list unchanged on read-back. The modal is REQ-007.6 | `unit.xml` and `integration.xml`, case REQ-007.3 |
 | REQ-007.4 member's forced mark out of service: refused, unchanged | U (S1); I (S2): not carried out, the item's status unchanged on read-back. The modal is REQ-007.6 | `unit.xml` and `integration.xml`, case REQ-007.4 |
 | REQ-007.5 member's forced restore: refused, unchanged | U (S1); I (S2): not carried out, the item's status unchanged on read-back. The modal is REQ-007.6 | `unit.xml` and `integration.xml`, case REQ-007.5 |
-| REQ-007.6 Access denied modal with "You do not have permission" for each refusal | C (S3): a mocked refusal on each of the five actions shows the modal with that text; J (S4): forced attempts through the real server, one for each of the five (Ada operates the page, the identity of the request is rewritten to Mia): the modal appears and nothing changes | `component.xml` and `journey.xml`, case REQ-007.6 |
-| REQ-007.7 single OK icon, no Close, no Retry | C (S3) | `component.xml`, case REQ-007.7 |
-| REQ-007.8 OK closes the modal, nothing changes | C (S3) | `component.xml`, case REQ-007.8 |
+| REQ-007.6 Access denied modal with "You do not have permission" for each refusal | C (S3): a mocked refusal on each of the five actions shows the modal with that text; J (S4): forced attempts through the real server, one for each of the five (Ada operates the page, the identity of the request is rewritten to Mia): the modal appears and nothing changes; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `journey.xml`, case REQ-007.6 |
+| REQ-007.7 single OK icon, no Close, no Retry | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-007.7; `journey.xml`, case REQ-007.7 |
+| REQ-007.8 OK closes the modal, nothing changes | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-007.8; `journey.xml`, case REQ-007.8 |
 
 **REQ-008 One active loan per item**
 
 | Criterion | Mechanism | Evidence it produces |
 |---|---|---|
-| REQ-008.1 never more than one active loan or borrower | D (S1): written directly to the store, an item On loan with no borrower, and a borrower on an item that is not On loan, are not accepted; I (S2): after a confirmed Borrow, the listing shows the borrowed item with exactly one borrower, and after each of the twenty rounds of two simultaneous Borrows (REQ-008.4), each item read back shows at most one borrower and the contested item exactly one. The row claims no mixed sequence of actions and no check after the other concurrency tests of section 8 | `db.xml` and `integration.xml`, case REQ-008.1 |
+| REQ-008.1 never more than one active loan or borrower | D (S1): written directly to the store, an item On loan with no borrower, and a borrower on an item that is not On loan, are not accepted; I (S2): after a confirmed Borrow, the listing shows the borrowed item with exactly one borrower, and after each of the twenty rounds of two simultaneous Borrows (REQ-008.4), each item read back shows at most one borrower and the contested item exactly one. The row claims no mixed sequence of actions and no check after the other concurrency tests of section 8; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `db.xml` and `integration.xml`, case REQ-008.1; `journey.xml`, case REQ-008.1 |
 | REQ-008.2 Borrow on an On loan item rejected, borrower unchanged | U (S1): the borrow decision; I (S2): not carried out, the borrower unchanged on read-back | `unit.xml` and `integration.xml`, case REQ-008.2 |
 | REQ-008.3 Borrow on an Out of service item rejected, status unchanged | U (S1); I (S2): not carried out, the status unchanged on read-back | `unit.xml` and `integration.xml`, case REQ-008.3 |
-| REQ-008.4 two simultaneous Borrows: one confirmed, one rejected by the server, one borrower | I (S2): two threads released by a barrier, repeated 20 times, plus both serial orders: exactly one of the two requests carried out and the other not carried out, one borrower afterwards | `integration.xml`, case REQ-008.4 |
+| REQ-008.4 two simultaneous Borrows: one confirmed, one rejected by the server, one borrower | I (S2): two threads released by a barrier, repeated 20 times, plus both serial orders: exactly one of the two requests carried out and the other not carried out, one borrower afterwards; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `integration.xml`, case REQ-008.4; `journey.xml`, case REQ-008.4 |
 | REQ-008.5 a rejected Borrow is shown as REQ-012.5/.6 | C (S3): a mocked rejection on Borrow shows the API failure modal and changes nothing | `component.xml`, case REQ-008.5 |
 | REQ-008.6 Borrow on an On loan item: borrower unchanged, failure modal | U (S1); I (S2): not carried out, borrower unchanged (the API failure modal that a person sees is asserted in J, next); J (S4): in two browser contexts that both list the item Available, Ada's Borrow for Mia is confirmed in the first, then Sam's Borrow in the second shows the API failure modal and the item stays On loan to Mia | `unit.xml`, `integration.xml` and `journey.xml`, case REQ-008.6 |
 | REQ-008.7 Borrow on an Out of service item: status unchanged, failure modal | U (S1); I (S2): not carried out, status unchanged (the API failure modal that a person sees is asserted in J, next); J (S4): Ada marks the item out of service in the first context while the second still lists it Available, then Sam's Borrow in the second shows the API failure modal and the item stays Out of service | `unit.xml`, `integration.xml` and `journey.xml`, case REQ-008.7 |
-| REQ-008.8 the loser in REQ-008.4 sees the failure modal; item On loan to the winner's borrower | I (S2): the same threaded test asserts that exactly one of the two requests was carried out and the other was not, and the item is On loan to the borrower the confirmed request named (the failure modal that the loser sees is asserted in J, next); J (S4): the two-context scenario of REQ-008.6 | `integration.xml` and `journey.xml`, case REQ-008.8 |
+| REQ-008.8 the loser in REQ-008.4 sees the failure modal; item On loan to the winner's borrower | I (S2): the same threaded test asserts that exactly one of the two requests was carried out and the other was not, and the item is On loan to the borrower the confirmed request named (the failure modal that the loser sees is asserted in J, next); J (S4): the two-context scenario of REQ-008.6; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `integration.xml` and `journey.xml`, case REQ-008.8 |
 
 **REQ-009 Add equipment**
 
@@ -425,30 +425,30 @@ closes the row. The report is an input to it and is never that evidence.
 | REQ-009.1 admin sees the Add field above the list | C (S3): `add-input` precedes `equipment-list` in document order | `component.xml`, case REQ-009.1 |
 | REQ-009.2 Enter adds, item appears Available | C (S3); J (S4) | `component.xml` and `journey.xml`, case REQ-009.2 |
 | REQ-009.3 Add icon same as Enter | C (S3) | `component.xml`, case REQ-009.3 |
-| REQ-009.4 empty + Enter: inline message inside the Add panel, below the field, nothing created | C (S3): the mocked server would accept any Add; `add-validation` is shown as a descendant of `add-card`, after `add-input` in document order, and the list is as before; B (S3): in Chromium the box of `add-validation` lies within the box of `add-card`, its top edge is not above the lower edge of `add-input`, and the two boxes do not overlap (the placement of section 12.8.1) | `component.xml` and `browser.xml`, case REQ-009.4 |
-| REQ-009.5 empty + Add icon: same | C (S3) and B (S3): as REQ-009.4, with the Add icon activated | `component.xml` and `browser.xml`, case REQ-009.5 |
-| REQ-009.6 whitespace-only treated as empty | U (S1): the name rule treats a name of spaces and tabs as empty; C (S3): the message shows and the list is as before; I (S2): an Add of spaces and tabs is not carried out and creates nothing | `unit.xml`, `component.xml`, `integration.xml`, case REQ-009.6 |
+| REQ-009.4 empty + Enter: inline message inside the Add panel, below the field, nothing created | C (S3): the mocked server would accept any Add; `add-validation` is shown as a descendant of `add-card`, after `add-input` in document order, and the list is as before; B (S3): in Chromium the box of `add-validation` lies within the box of `add-card`, its top edge is not above the lower edge of `add-input`, and the two boxes do not overlap (the placement of section 12.8.1); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `browser.xml`, case REQ-009.4; `journey.xml`, case REQ-009.4 |
+| REQ-009.5 empty + Add icon: same | C (S3) and B (S3): as REQ-009.4, with the Add icon activated; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `browser.xml`, case REQ-009.5; `journey.xml`, case REQ-009.5 |
+| REQ-009.6 whitespace-only treated as empty | U (S1): the name rule treats a name of spaces and tabs as empty; C (S3): the message shows and the list is as before; I (S2): an Add of spaces and tabs is not carried out and creates nothing; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `unit.xml`, `component.xml`, `integration.xml`, case REQ-009.6; `journey.xml`, case REQ-009.6 |
 | REQ-009.7 member sees no Add field | C (S3) | `component.xml`, case REQ-009.7 |
-| REQ-009.8 inline message is on the page, inside the Add panel and below the field, not a modal | C (S3): `add-validation` exists as a descendant of `add-card` and no element has role `alertdialog`; B (S3): the placement of REQ-009.4 holds, in Chromium, when the message shows for an empty name, for a whitespace-only name and for a 101-character name | `component.xml` and `browser.xml`, case REQ-009.8 |
+| REQ-009.8 inline message is on the page, inside the Add panel and below the field, not a modal | C (S3): `add-validation` exists as a descendant of `add-card` and no element has role `alertdialog`; B (S3): the placement of REQ-009.4 holds, in Chromium, when the message shows for an empty name, for a whitespace-only name and for a 101-character name; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `browser.xml`, case REQ-009.8; `journey.xml`, case REQ-009.8 |
 | REQ-009.9 duplicate names accepted | I (S2): two Adds of one name are both confirmed and make two items; C (S3) the list shows two rows | `integration.xml` and `component.xml`, case REQ-009.9 |
-| REQ-009.10 over 100 characters after trimming: rejected by the server, nothing created | U (S1): the name rule at 100 and 101 characters, padded and unpadded; I (S2): a name of 101 characters, and of 101 characters between spaces, is not carried out and the list is unchanged on read-back | `unit.xml` and `integration.xml`, case REQ-009.10 |
-| REQ-009.11 over 100: inline message inside the Add panel and below the field, no item, no failure modal | C (S3): a 101-character name shows `add-validation` as a descendant of `add-card`, creates no item (the mocked server would accept it) and shows no modal; an Add that the mocked server rejects for its length is also shown as the inline message and never as the failure modal; B (S3): the placement of REQ-009.4 holds for the 101-character name | `component.xml` and `browser.xml`, case REQ-009.11 |
+| REQ-009.10 over 100 characters after trimming: rejected by the server, nothing created | U (S1): the name rule at 100 and 101 characters, padded and unpadded; I (S2): a name of 101 characters, and of 101 characters between spaces, is not carried out and the list is unchanged on read-back; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `unit.xml` and `integration.xml`, case REQ-009.10; `journey.xml`, case REQ-009.10 |
+| REQ-009.11 over 100: inline message inside the Add panel and below the field, no item, no failure modal | C (S3): a 101-character name shows `add-validation` as a descendant of `add-card`, creates no item (the mocked server would accept it) and shows no modal; an Add that the mocked server rejects for its length is also shown as the inline message and never as the failure modal; B (S3): the placement of REQ-009.4 holds for the 101-character name; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `browser.xml`, case REQ-009.11; `journey.xml`, case REQ-009.11 |
 | REQ-009.12 100 characters or fewer accepted | U (S1): boundary 100 and 101, with ASCII and with 100 characters outside the Basic Multilingual Plane (one character each, whatever the counting unit of the encoding); I (S2): a 100-character name is confirmed; C (S3): a 100-character name, ASCII and non-ASCII, is added and appears Available | `unit.xml`, `integration.xml`, `component.xml`, case REQ-009.12 |
-| REQ-009.13 the Add loader replaces the Add icon while an Add is in progress | C (S3): with the Add's answer held open, `add-loader` is inside `add-card` and `btn-add` is not present | `component.xml`, case REQ-009.13 |
-| REQ-009.14 while the Add loader shows, Enter and the Add icon do nothing | C (S3): with the Add's answer held open, Enter pressed again in the field does nothing; when the answer is released the list shows exactly one new row (the mocked server makes one item per Add it receives) and no `add-validation` and no modal is present | `component.xml`, case REQ-009.14 |
-| REQ-009.15 the over-length message reads "Name must be 100 characters or fewer." | C (S3): a 101-character name makes `add-validation` read exactly that | `component.xml`, case REQ-009.15 |
+| REQ-009.13 the Add loader replaces the Add icon while an Add is in progress | C (S3): with the Add's answer held open, `add-loader` is inside `add-card` and `btn-add` is not present; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-009.13; `journey.xml`, case REQ-009.13 |
+| REQ-009.14 while the Add loader shows, Enter and the Add icon do nothing | C (S3): with the Add's answer held open, Enter pressed again in the field does nothing; when the answer is released the list shows exactly one new row (the mocked server makes one item per Add it receives) and no `add-validation` and no modal is present; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-009.14; `journey.xml`, case REQ-009.14 |
+| REQ-009.15 the over-length message reads "Name must be 100 characters or fewer." | C (S3): a 101-character name makes `add-validation` read exactly that; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-009.15; `journey.xml`, case REQ-009.15 |
 
 **REQ-010 Out-of-service status**
 
 | Criterion | Mechanism | Evidence it produces |
 |---|---|---|
 | REQ-010.1 Mark icon on every Available row (admin) | C (S3) | `component.xml`, case REQ-010.1 |
-| REQ-010.2 no Mark icon on On loan or Out of service rows | C (S3) | `component.xml`, case REQ-010.2 |
+| REQ-010.2 no Mark icon on On loan or Out of service rows | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-010.2; `journey.xml`, case REQ-010.2 |
 | REQ-010.3 after Mark, the row reads Out of service | C (S3); I (S2) the action is confirmed and the read-back shows Out of service; J (S4) | `component.xml`, `integration.xml`, `journey.xml`, case REQ-010.3 |
 | REQ-010.4 Restore icon on every Out of service row | C (S3) | `component.xml`, case REQ-010.4 |
-| REQ-010.5 no Restore icon on Available or On loan rows | C (S3) | `component.xml`, case REQ-010.5 |
+| REQ-010.5 no Restore icon on Available or On loan rows | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-010.5; `journey.xml`, case REQ-010.5 |
 | REQ-010.6 after Restore, the row reads Available | C (S3); I (S2) the read-back shows Available; J (S4) | `component.xml`, `integration.xml`, `journey.xml`, case REQ-010.6 |
-| REQ-010.7 member sees neither icon | C (S3) | `component.xml`, case REQ-010.7 |
+| REQ-010.7 member sees neither icon | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-010.7; `journey.xml`, case REQ-010.7 |
 
 **REQ-011 Delete equipment with confirmation**
 
@@ -456,9 +456,9 @@ closes the row. The report is an input to it and is never that evidence.
 |---|---|---|
 | REQ-011.1 Delete x on every Available and Out of service row | C (S3) | `component.xml`, case REQ-011.1 |
 | REQ-011.2 no Delete x on an On loan row | C (S3) | `component.xml`, case REQ-011.2 |
-| REQ-011.3 modal names the item before any request | C (S3): `modal-title` contains the item name and the mocked server has received no request | `component.xml`, case REQ-011.3 |
+| REQ-011.3 modal names the item before any request | C (S3): `modal-title` contains the item name and the mocked server has received no request; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-011.3; `journey.xml`, case REQ-011.3 |
 | REQ-011.4 modal has Cancel and Confirm icons | C (S3) | `component.xml`, case REQ-011.4 |
-| REQ-011.5 Cancel closes, no request, no change | C (S3) | `component.xml`, case REQ-011.5 |
+| REQ-011.5 Cancel closes, no request, no change | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-011.5; `journey.xml`, case REQ-011.5 |
 | REQ-011.6 Confirm sends the delete, row loader | C (S3) | `component.xml`, case REQ-011.6 |
 | REQ-011.7 item gone once confirmed | C (S3); J (S4) | `component.xml` and `journey.xml`, case REQ-011.7 |
 | REQ-011.8 delete of an On loan item rejected: still listed, still On loan, failure modal | U (S1): the delete decision; I (S2): not carried out, the item still listed and still On loan on read-back (the API failure modal that a person sees is asserted in J, next); J (S4): Ada's context lists the item Available with Delete offered, Mia borrows it in a second context, Ada confirms the delete: the API failure modal appears and the item stays On loan to Mia | `unit.xml`, `integration.xml` and `journey.xml`, case REQ-011.8 |
@@ -468,22 +468,22 @@ closes the row. The report is an input to it and is never that evidence.
 
 | Criterion | Mechanism | Evidence it produces |
 |---|---|---|
-| REQ-012.1 row loader until confirmed (Borrow, Return, Delete) | C (S3): the mocked answer is held open | `component.xml`, case REQ-012.1 |
-| REQ-012.2 until confirmed the list is as before | C (S3) | `component.xml`, case REQ-012.2 |
-| REQ-012.3 on confirmation the list shows the new state | C (S3) | `component.xml`, case REQ-012.3 |
+| REQ-012.1 row loader until confirmed (Borrow, Return, Delete) | C (S3): the mocked answer is held open; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.1; `journey.xml`, case REQ-012.1 |
+| REQ-012.2 until confirmed the list is as before | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.2; `journey.xml`, case REQ-012.2 |
+| REQ-012.3 on confirmation the list shows the new state | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.3; `journey.xml`, case REQ-012.3 |
 | REQ-012.4 no success banner when confirmed | C (S3): the page text outside the list and the modals is unchanged by the confirmation | `component.xml`, case REQ-012.4 |
-| REQ-012.5 failure of any of the six: nothing changes | C (S3) with mocked rejections of several kinds (a conflict, a missing item, a server error and a request that never reaches the server) for each of the six actions | `component.xml`, case REQ-012.5 |
-| REQ-012.6 API failure modal with Close and Retry | C (S3) | `component.xml`, case REQ-012.6 |
+| REQ-012.5 failure of any of the six: nothing changes | C (S3) with mocked rejections of several kinds (a conflict, a missing item, a server error and a request that never reaches the server) for each of the six actions; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.5; `journey.xml`, case REQ-012.5 |
+| REQ-012.6 API failure modal with Close and Retry | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.6; `journey.xml`, case REQ-012.6 |
 | REQ-012.7 Close closes, nothing changes | C (S3) | `component.xml`, case REQ-012.7 |
 | REQ-012.8 Retry repeats the same request | C (S3): the second request the mocked server receives is for the same item and the same action as the first, and for an admin's Borrow names the same chosen member; J (S4): the first attempt is aborted by `page.route`, Retry succeeds against the real server | `component.xml` and `journey.xml`, case REQ-012.8 |
-| REQ-012.9 loader for Add, Mark and Restore | C (S3): `add-loader` for Add, `row-loader` for the others | `component.xml`, case REQ-012.9 |
-| REQ-012.10 until confirmed the list is as before | C (S3) | `component.xml`, case REQ-012.10 |
-| REQ-012.11 on confirmation the new state shows | C (S3); J (S4) | `component.xml` and `journey.xml`, case REQ-012.11 |
-| REQ-012.12 failure of Add, Mark, Restore: nothing changes, failure modal | C (S3) with a mocked server error and a mocked conflict | `component.xml`, case REQ-012.12 |
-| REQ-012.13 Retry repeats Add with the same name, or Mark/Restore on the same item | C (S3) | `component.xml`, case REQ-012.13 |
-| REQ-012.14 loader removed on failure, then the modal; no loader while it shows | C (S3): the first rendered DOM that contains the modal contains no `row-loader` and no `add-loader`, for each of the six actions | `component.xml`, case REQ-012.14 |
+| REQ-012.9 loader for Add, Mark and Restore | C (S3): `add-loader` for Add, `row-loader` for the others; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.9; `journey.xml`, case REQ-012.9 |
+| REQ-012.10 until confirmed the list is as before | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.10; `journey.xml`, case REQ-012.10 |
+| REQ-012.11 on confirmation the new state shows | C (S3); J (S4); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `journey.xml`, case REQ-012.11 |
+| REQ-012.12 failure of Add, Mark, Restore: nothing changes, failure modal | C (S3) with a mocked server error and a mocked conflict; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.12; `journey.xml`, case REQ-012.12 |
+| REQ-012.13 Retry repeats Add with the same name, or Mark/Restore on the same item | C (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.13; `journey.xml`, case REQ-012.13 |
+| REQ-012.14 loader removed on failure, then the modal; no loader while it shows | C (S3): the first rendered DOM that contains the modal contains no `row-loader` and no `add-loader`, for each of the six actions; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-012.14; `journey.xml`, case REQ-012.14 |
 | REQ-012.15 no success note after Add, Mark, Restore | C (S3): the page text outside the list is unchanged by the confirmation | `component.xml`, case REQ-012.15 |
-| REQ-012.16 an action on an item that is no longer there: does not happen, unchanged, failure modal | I (S2): each of Borrow, Return, Delete, Mark out of service and Restore on an item that was deleted, and on an id that never existed, is not carried out and nothing is created or changed on read-back (the API failure modal that a person sees is asserted in C and J, next); C (S3): a mocked rejection of the missing-item kind on each of the five shows the API failure modal and leaves the list as it was; J (S4): in two contexts that list the item, the second deletes it, then the first activates Mark out of service: the API failure modal appears and the first context's row is unchanged | `integration.xml`, `component.xml` and `journey.xml`, case REQ-012.16 |
+| REQ-012.16 an action on an item that is no longer there: does not happen, unchanged, failure modal | I (S2): each of Borrow, Return, Delete, Mark out of service and Restore on an item that was deleted, and on an id that never existed, is not carried out and nothing is created or changed on read-back (the API failure modal that a person sees is asserted in C and J, next); C (S3): a mocked rejection of the missing-item kind on each of the five shows the API failure modal and leaves the list as it was; J (S4): in two contexts that list the item, the second deletes it, then the first activates Mark out of service: the API failure modal appears and the first context's row is unchanged; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `integration.xml`, `component.xml` and `journey.xml`, case REQ-012.16 |
 
 **REQ-013 List page states**
 
@@ -516,9 +516,9 @@ behind the modal and after Close (GAP-1, section 11.2), so no row asserts either
 | REQ-013.21 an Add of a name over 100 characters from the view is not carried out; the view stays; no failure modal | C (S3): in the Show empty list view, a 101-character name (the mocked server would accept it) makes `add-validation` read "Name must be 100 characters or fewer.", creates no item, opens no modal and leaves `empty-state` in place; an Add that the mocked server rejects for its length is shown the same way and never as the failure modal; B (S3): the placement of section 12.8.1 holds for the message in this view | `component.xml` and `browser.xml`, case REQ-013.21 |
 | REQ-013.22 a failing Add from the view: nothing created, failure modal, the view stays; Retry repeats the Add | C (S3): in the Show empty list view the mocked server fails the Add (a server error, a conflict, and a request that never reaches the server): `modal-api-failure` appears with `btn-close` and `btn-retry`, the mocked server's data holds no new item and `empty-state` is still present; Close closes the modal and the view stays; after Retry the mocked server receives a second Add with the same name, and when that is confirmed `equipment-list` shows the new item as Available and `empty-state` is absent (REQ-013.18, REQ-013.19) | `component.xml`, case REQ-013.22 |
 | REQ-013.23 a failed list fetch shows the API failure modal with Close and Retry | C (S3): the mocked list fetch is answered with several kinds of failure (a server error, a missing resource, and a request that never reaches the server): `modal-api-failure` appears with `btn-close` and `btn-retry`; a mocked refusal of the list fetch shows `modal-access-denied` and not the failure modal (PRD section 4, List fetch); J (S4): on the real stack, the list request the page makes after a pick is aborted with `page.route`: the failure modal appears with Close and Retry | `component.xml` and `journey.xml`, case REQ-013.23 |
-| REQ-013.24 Close closes the modal and does not repeat the fetch | C (S3): after the failed list fetch, with any second list request held open so that a repeated fetch would show `list-indicator`, activating `btn-close` closes the modal and `list-indicator` is not present | `component.xml`, case REQ-013.24 |
+| REQ-013.24 Close closes the modal and does not repeat the fetch | C (S3): after the failed list fetch, with any second list request held open so that a repeated fetch would show `list-indicator`, activating `btn-close` closes the modal and `list-indicator` is not present; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-013.24; `journey.xml`, case REQ-013.24 |
 | REQ-013.25 Retry repeats the fetch for the same acting identity; indicator meanwhile; the list or the empty text on success | C (S3): after the failed list fetch as Ada, `btn-retry` makes the mocked server receive a second list request that it answers for Ada (it acts for the identity it is sent), `list-indicator` is present while that answer is held open, and when it is released `equipment-list` shows the items, or `empty-state` when the mocked data holds none; J (S4): the first list request is aborted with `page.route`, Retry succeeds against the real server and the real list shows | `component.xml` and `journey.xml`, case REQ-013.25 |
-| REQ-013.26 a second failure shows the modal again | C (S3): the mocked server fails the first list fetch and the repeat: after `btn-retry`, `modal-api-failure` appears again with `btn-close` and `btn-retry` | `component.xml`, case REQ-013.26 |
+| REQ-013.26 a second failure shows the modal again | C (S3): the mocked server fails the first list fetch and the repeat: after `btn-retry`, `modal-api-failure` appears again with `btn-close` and `btn-retry`; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-013.26; `journey.xml`, case REQ-013.26 |
 
 **REQ-014 Labelled icon buttons and operable modals**
 
@@ -527,10 +527,10 @@ behind the modal and after Close (GAP-1, section 11.2), so no row asserts either
 | REQ-014.1 eleven controls shown as icons, also inside modals | C (S3): each of the eleven, wherever it renders (row controls on rows, the Add icon in the Add panel, Close, Retry, OK, Cancel and Confirm in their modals), has an `svg` child and no text node | `component.xml`, case REQ-014.1 |
 | REQ-014.2 every icon button has a tooltip | C (S3): for each of the fifteen icon buttons the `title` attribute equals the pinned text of section 12.8.2 | `component.xml`, case REQ-014.2 |
 | REQ-014.3 every icon button has an accessible label | C (S3): `aria-label` equals the pinned text; `getByRole("button", {name})` finds it | `component.xml`, case REQ-014.3 |
-| REQ-014.4 every modal uses role `alertdialog` | C (S3): all four modals | `component.xml`, case REQ-014.4 |
-| REQ-014.5 modal icon buttons operable by keyboard | B (S3): Tab reaches each button and Enter or Space activates it, in all four modals | `browser.xml`, case REQ-014.5 |
-| REQ-014.6 icon buttons outside modals operable by keyboard | B (S3): row buttons, Add icon and four demo controls | `browser.xml`, case REQ-014.6 |
-| REQ-014.7 member buttons operable by keyboard | B (S3) | `browser.xml`, case REQ-014.7 |
+| REQ-014.4 every modal uses role `alertdialog` | C (S3): all four modals; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml`, case REQ-014.4; `journey.xml`, case REQ-014.4 |
+| REQ-014.5 modal icon buttons operable by keyboard | B (S3): Tab reaches each button and Enter or Space activates it, in all four modals; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `browser.xml`, case REQ-014.5; `journey.xml`, case REQ-014.5 |
+| REQ-014.6 icon buttons outside modals operable by keyboard | B (S3): row buttons, Add icon and four demo controls; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `browser.xml`, case REQ-014.6; `journey.xml`, case REQ-014.6 |
+| REQ-014.7 member buttons operable by keyboard | B (S3); J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `browser.xml`, case REQ-014.7; `journey.xml`, case REQ-014.7 |
 | REQ-014.8 the icon rule covers the eleven only | C (S3): each member button holds an `svg` and the member's name | `component.xml`, case REQ-014.8 |
 | REQ-014.9 member button tooltip and label "Borrow for <name>" | C (S3) | `component.xml`, case REQ-014.9 |
 | REQ-014.10 demo controls: tooltip and labels | C (S3): `title` and `aria-label` per section 12.8.2 | `component.xml`, case REQ-014.10 |
@@ -594,7 +594,7 @@ to that line and is never the evidence of a row. In the cells below, "R2 (S4)" m
 | REQ-017.15 no search or filter control | C (S3); R2 (S4): agent pre-review, then the user's walk-through | `component.xml`; the user's walk-through line REQ-017.15 |
 | REQ-017.16 no theme control | C (S3); R2 (S4): agent pre-review, then the user's walk-through | `component.xml`; the user's walk-through line REQ-017.16 |
 | REQ-017.17 no success note after Add, Mark, Restore | C (S3), the same observation as REQ-012.15 | `component.xml`, case REQ-017.17 |
-| REQ-017.18 no control outside the inventory | C (S3): every `button`, `input`, `select`, `a`, `textarea` and element with `tabindex` or a button role in every state is one of the `data-testid` values of section 12.8.3, per role; B (S3) repeats it in Chromium on the production build | `component.xml` and `browser.xml`, case REQ-017.18 |
+| REQ-017.18 no control outside the inventory | C (S3): every `button`, `input`, `select`, `a`, `textarea` and element with `tabindex` or a button role in every state is one of the `data-testid` values of section 12.8.3, per role; B (S3) repeats it in Chromium on the production build; J (S4), the journey pair of the eval plan (its 1.6): the same outcome through the real stack | `component.xml` and `browser.xml`, case REQ-017.18; `journey.xml`, case REQ-017.18 |
 | REQ-017.19 no trial-only banner, label or text | C (S3): no text containing "trial", "mockup", "sample data" or "nothing is saved" in any state; R2 (S4): agent pre-review, then the user's walk-through | `component.xml`; the user's walk-through line REQ-017.19 |
 
 ### 4.3 Register totals
@@ -611,7 +611,7 @@ to that line and is never the evidence of a row. In the cells below, "R2 (S4)" m
 | REQ-008 | 8 | | REQ-017 | 19 |
 | REQ-009 | 15 | | **Total** | **182** |
 
-Every one of the 182 criteria has a row. The fifteen added by the first amendment of the PRD are
+Every one of the 182 criteria has a row. After the build, the eval plan's journey pairs (its section 1.6: every behavioural requirement has a positive and a negative journey row) added J evidence to 51 criteria of REQ-002, REQ-004 to REQ-014 and REQ-017; each such row says so in its Mechanism cell. REQ-015 is the plan's look list and keeps B as its end-to-end evidence. The fifteen added by the first amendment of the PRD are
 REQ-001.10, REQ-001.11, REQ-004.11, REQ-004.12, REQ-009.13 to REQ-009.15, REQ-012.16 and
 REQ-013.11 to REQ-013.17. The nine added by the third round are REQ-013.18 to REQ-013.26 (D-25 and
 D-26). Rows whose evidence is a human review: REQ-015.4, REQ-015.5, REQ-015.6 (R1) and the R2 line
