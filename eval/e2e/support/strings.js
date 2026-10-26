@@ -46,3 +46,14 @@ export const SEEDED_USERS = [ADA, MIA, SAM];
 export function switcherEntry(user) {
   return `${user.name} (${user.role})`;
 }
+
+/** Blueprint 12.9 (mockup): the inline message for an empty or whitespace-only name. */
+export const NAME_REQUIRED = 'Name is required.';
+
+/** PRD REQ-009.15, D-22, blueprint 12.9: the inline message for a name over 100 characters. */
+export const NAME_TOO_LONG = 'Name must be 100 characters or fewer.';
+
+/** Blueprint 12.9 (mockup): the title of the confirm-delete modal names the item. */
+export function deleteTitle(itemName) {
+  return `Delete ${itemName}?`;
+}

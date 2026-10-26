@@ -60,7 +60,8 @@ export default {
   /**
    * Where the ordering requirement of C11 is kept.
    *
-   * The three production rows stop the stack with `docker compose down` and
+   * The production rows stop the stack with `docker compose down` (or, for
+   * T-012-N13, stop its database service) and
    * start it again. A test that does that in the middle of the suite destroys
    * every row after it, so they must be last — and "last" must be a guarantee,
    * not a side effect of how the files happen to sort. Playwright does run files

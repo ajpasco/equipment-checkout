@@ -126,3 +126,46 @@ export async function takeOutOfService(request, itemId) {
   }
   return item;
 }
+
+/**
+ * Return a loan as Ada. For the rows whose page must hold a view that another
+ * person has since made stale (T-007-N10, T-012-N11, T-012-N12).
+ */
+export async function returnItem(request, itemId) {
+  const response = await request.post(`${EQUIPMENT}/${itemId}/return`, {
+    headers: headers(SEEDED_USERS[0].id),
+  });
+  const item = asItem(await body(response, `return ${itemId}`), `returning item ${itemId}`);
+  if (item.status !== 'available' || item.borrowerId !== null) {
+    throw new Error(`returning item ${itemId}: the stack holds ${JSON.stringify(item)}`);
+  }
+  return item;
+}
+
+/** Restore an out-of-service item as Ada, for the same rows. */
+export async function restoreItem(request, itemId) {
+  const response = await request.post(`${EQUIPMENT}/${itemId}/restore`, {
+    headers: headers(SEEDED_USERS[0].id),
+  });
+  const item = asItem(await body(response, `restore ${itemId}`), `restoring item ${itemId}`);
+  if (item.status !== 'available') {
+    throw new Error(`restoring item ${itemId}: the stack holds ${JSON.stringify(item)}`);
+  }
+  return item;
+}
+
+/**
+ * Delete an item as Ada. The answer is the item as it was just before it went
+ * (blueprint 12.2), so the check that it is gone is a read of the list, not the
+ * answer.
+ */
+export async function deleteItem(request, itemId) {
+  const response = await request.delete(`${EQUIPMENT}/${itemId}`, {
+    headers: headers(SEEDED_USERS[0].id),
+  });
+  asItem(await body(response, `delete ${itemId}`), `deleting item ${itemId}`);
+  const still = (await readList(request)).find((item) => item.id === itemId);
+  if (still !== undefined) {
+    throw new Error(`deleting item ${itemId}: the stack still lists ${JSON.stringify(still)}`);
+  }
+}
